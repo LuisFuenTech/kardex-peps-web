@@ -1,0 +1,21 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark cyan darken-3">
+    <div class="container">
+        <a class="navbar-brand" href="/">My Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+            aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <ul class="navbar-nav mr-auto">
+
+                {{#each navbar_data}}
+                <li class="nav-item">
+                    <a class="nav-link" href={{this.url}}>{{this.title}}</a>
+                </li>
+                {{/each}}
+
+            </ul>
+        </div>
+    </div>
+</nav>
