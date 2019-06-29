@@ -4,7 +4,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const passport = require("passport");
 const path = require("path");
 const expHbs = require("express-handlebars");
 const session = require("express-session");
@@ -14,12 +13,6 @@ const navbarData = require("./data/nav-bar");
 
 //Routes
 const { userRoutes } = require("./users/index");
-const { cardRoutes } = require("./card/index");
-const { cardUserRoutes } = require("./card-user/index");
-const { nodemcuRoutes } = require("./nodemcu/index");
-
-//Init
-const { Passport } = require("./services/index");
 
 //Settings
 app.set("views", path.join(__dirname, "views"));
@@ -47,8 +40,6 @@ app.use(
     saveUninitialized: true
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(flash());
 
 //Local variables
@@ -81,9 +72,6 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.use("/user", userRoutes);
-app.use("/api", nodemcuRoutes);
-app.use("/api", cardRoutes);
-app.use("/api", cardUserRoutes);
+app.use(userRoutes);
 
 module.exports = app;
