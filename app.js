@@ -10,6 +10,10 @@ const session = require("express-session");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
 const navbarData = require("./data/nav-bar");
+const mysql = require("mysql");
+const myConnection = require("express-myconnection");
+const port_sql = process.env.PORT_SQL;
+const dbUrl = process.env.MONGODB_URL;
 
 //Routes
 const { userRoutes } = require("./users/index");
@@ -39,6 +43,19 @@ app.use(
     resave: true,
     saveUninitialized: true
   })
+);
+app.use(
+  myConnection(
+    mysql,
+    {
+      host: dbUrl,
+      port: port_sql,
+      user: "root",
+      password: "Mysql@fuentech2018",
+      database: "inventario_db"
+    },
+    "single"
+  )
 );
 app.use(flash());
 
