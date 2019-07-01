@@ -7,4 +7,8 @@ app.get("/peps", userController.getPeps);
 app.get("/products", userController.getProducts);
 app.get("/about", userController.getAbout);
 
+//Post
+app.post("/purchase", userController.makePurchase);
+app.post("/sale", userController.makeSale);
+
 module.exports = app;

@@ -21,3 +21,15 @@ console.log(
     .subtract("5", "hours")
     .toJSON()
 );
+
+/* (async function() {
+  console.log("a");
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("b");
+      resolve();
+    }, 2000);
+  });
+  console.log("c");
+})(); */

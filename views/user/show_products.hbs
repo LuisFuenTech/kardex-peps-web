@@ -1,3 +1,25 @@
 <div class="col mx-auto mt-4">
-    <h1>Soy un producto</h1>
+    <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
+        <div class="table-responsive">
+            <table class="table table-bordered ">
+
+                <thead class="thead-dark" align="center">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody align="center">
+
+                    {{#each rs}}
+                    <tr>
+                        <td>{{this.nombre_producto}}</td>
+                        <td>{{this.cantidad_producto}}</td>
+                    </tr>
+                    {{/each}}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
