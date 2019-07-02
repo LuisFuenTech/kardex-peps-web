@@ -1,4 +1,5 @@
 const { Producto, Detalle } = require("../models/index");
+const simu = require("../data/simulator");
 
 const getKardex = (req, res) => {
   const errors = [];
