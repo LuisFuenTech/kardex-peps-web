@@ -1,25 +1,31 @@
-<div class="col mx-auto mt-4">
-    <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
-        <div class="table-responsive">
-            <table class="table table-bordered ">
+<div class="row">
+    <div class="col-4">
+        {{> new_article}}
+    </div>
 
-                <thead class="thead-dark" align="center">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Cantidad</th>
-                    </tr>
-                </thead>
-                <tbody align="center">
+    <div class="col mx-auto mt-4">
 
-                    {{#each rs}}
-                    <tr>
-                        <td>{{this.nombre_producto}}</td>
-                        <td>{{this.cantidad_producto}}</td>
-                    </tr>
-                    {{/each}}
+        <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
+            <div class="table-responsive">
+                <table class="table table-bordered ">
+                    <thead class="thead-dark" align="center">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
 
-                </tbody>
-            </table>
+                        {{#each rs}}
+                        <tr>
+                            <td>{{this.nombre_producto}}</td>
+                            <td>{{this.cantidad_producto}}</td>
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

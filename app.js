@@ -44,6 +44,7 @@ app.use(
     saveUninitialized: true
   })
 );
+
 app.use(
   myConnection(
     mysql,
@@ -51,12 +52,13 @@ app.use(
       host: dbUrl,
       port: port_sql,
       user: "root",
-      password: "Mysql@fuentech2018",
+      password: "",
       database: "inventario_db"
     },
     "single"
   )
 );
+
 app.use(flash());
 
 //Local variables
