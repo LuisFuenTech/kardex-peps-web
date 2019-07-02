@@ -53,8 +53,19 @@ const getAbout = (req, res) => {
   res.render("user/about");
 };
 
+const makeAction = (req, res) => {
+  console.log("Making action =====================");
+  const { accion } = req.body;
+  console.log("Making action ===================== ", accion);
+
+  if (accion) accion === "compra" ? makePurchase(req, res) : makeSale(req, res);
+  else res.render("user/");
+};
+
 const makePurchase = async (req, res) => {
+  console.log("Making purchase =============================================");
   const { cantidad, costo_unitario, costo_total, nombre } = req.body;
+  console.log(req.body);
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
   const {
     id_producto,
@@ -87,7 +98,12 @@ const makePurchase = async (req, res) => {
 };
 
 const makeSale = async (req, res) => {
+  console.log("Making sale =============================================");
+
   const { cantidad, costo_unitario, costo_total, nombre } = req.body;
+
+  console.log(req.body);
+
   const { id_detalle, nombre_detalle } = await searchDetail(req, "venta");
   const {
     id_producto,
@@ -165,6 +181,7 @@ async function updateProduct(req, product, id_producto) {
 }
 
 module.exports = {
+  makeAction,
   getKardex,
   getPeps,
   getProducts,
