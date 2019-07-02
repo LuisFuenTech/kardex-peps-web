@@ -1,59 +1,63 @@
-<div class="col mx-auto mt-4">
-    <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="thead-dark" align="center">
-                    <tr>
-                        <th colspan="2"></th>
-                        <th colspan="3">
-                            <div align="center">Compras/Ingresos</div>
-                        </th>
-                        <th colspan="3">
-                            <div align="center">Ventas/Egresos</div>
-                        </th>
-                        <th colspan="3">
-                            <div align="center">Saldo</div>
-                        </th>
-                    </tr>
-                </thead>
-                <thead class="thead-dark" align="center">
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Detalle</th>
-                        <th>Q</th>
-                        <th>CU</th>
-                        <th>CT</th>
+<div class="row">
+    {{> actions}}
 
-                        <th>Q</th>
-                        <th>CU</th>
-                        <th>CT</th>
+    <div class="col mx-auto mt-4">
+        <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark" align="center">
+                        <tr>
+                            <th colspan="2"></th>
+                            <th colspan="3">
+                                <div align="center">Compras/Ingresos</div>
+                            </th>
+                            <th colspan="3">
+                                <div align="center">Ventas/Egresos</div>
+                            </th>
+                            <th colspan="3">
+                                <div align="center">Saldo</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead class="thead-dark" align="center">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Detalle</th>
+                            <th>Q</th>
+                            <th>CU</th>
+                            <th>CT</th>
 
-                        <th>Q</th>
-                        <th>CU</th>
-                        <th>CT</th>
-                    </tr>
-                </thead>
-                <tbody align="center">
-                    {{#each rs}}
-                    <tr>
-                        <th>2019-06-29</th>
-                        <td>Compra</td>
-                        <td>25</td>
-                        <td>1000</td>
-                        <td>25000</td>
+                            <th>Q</th>
+                            <th>CU</th>
+                            <th>CT</th>
 
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                            <th>Q</th>
+                            <th>CU</th>
+                            <th>CT</th>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
+                        {{#each rs}}
+                        <tr>
+                            <th>2019-06-29</th>
+                            <td>Compra</td>
+                            <td>25</td>
+                            <td>1000</td>
+                            <td>25000</td>
 
-                        <td>{{this.cantidad_producto}}</td>
-                        <td>{{this.costo_unitario_producto}}</td>
-                        <td>{{this.costo_total_producto}}</td>
-                    </tr>
-                    {{/each}}
+                            <td></td>
+                            <td></td>
+                            <td></td>
 
-                </tbody>
-            </table>
+                            <td>{{this.cantidad_producto}}</td>
+                            <td>{{this.costo_unitario_producto}}</td>
+                            <td>{{this.costo_total_producto}}</td>
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
