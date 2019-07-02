@@ -1,6 +1,6 @@
 module.exports = [
   {
-    title: "Kardex",
+    title: "Promedio",
     url: "/kardex"
   },
   {
