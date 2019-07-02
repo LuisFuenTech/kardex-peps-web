@@ -18,7 +18,7 @@ const getKardex = (req, res) => {
   });
 };
 
-const getPeps = (req, res) => {
+const getPeps = async (req, res) => {
   const errors = [];
 
   await new Promise((resolve, reject) => {
@@ -220,15 +220,11 @@ async function saveProduct(req, product) {
   console.table(product);
   await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
-      conn.query(
-        `INSERT INTO producto SET ?`,
-        [product],
-        (err, rs) => {
-          if (err) console.log(err);
-          console.log(rs);
-          resolve(rs[0]);
-        }
-      );
+      conn.query(`INSERT INTO producto SET ?`, [product], (err, rs) => {
+        if (err) console.log(err);
+        console.log(rs);
+        resolve(rs[0]);
+      });
     });
   });
 }
