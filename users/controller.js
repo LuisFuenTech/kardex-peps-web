@@ -19,7 +19,23 @@ const getKardex = (req, res) => {
 };
 
 const getPeps = (req, res) => {
-  res.render("user/peps");
+  const errors = [];
+
+  await new Promise((resolve, reject) => {
+    req.getConnection((err, conn) => {
+      conn.query("SELECT * FROM producto", (err, rs) => {
+        if (err) {
+          errors.push({ error: "Error al actualizar la tabla" });
+          return res.render("user/peps", { errors });
+        }
+
+        res.render("user/peps", {
+          rs
+        });
+        resolve();
+      });
+    });
+  });
 };
 
 const addProduct = async (req, res) => {
