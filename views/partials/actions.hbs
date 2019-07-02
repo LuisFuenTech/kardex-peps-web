@@ -1,5 +1,4 @@
 <div>
-    <p>{{productos}}</p>
     <div class="card mt-4 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Acción</strong>
@@ -28,7 +27,7 @@
                         <option selected>Artículo</option>
 
                         {{#each productos}}
-                        <option value="Zapato">{{this.nombre_producto}}</option>
+                        <option>{{this.nombre_producto}}</option>
                         {{/each}}
 
                     </select>

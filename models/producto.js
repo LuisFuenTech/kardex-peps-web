@@ -4,7 +4,7 @@ module.exports = class Producto {
     cantidad = 0,
     costo_unitario = 0,
     costo_total = 0,
-    id = 0
+    id = null
   ) {
     this.nombre_producto = nombre;
     this.cantidad_producto = cantidad;

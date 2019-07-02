@@ -5,18 +5,11 @@ const getKardex = (req, res) => {
   const errors = [];
 
   req.getConnection((err, conn) => {
-    conn.query("SELECT * FROM inventario_db.producto", (err, rs) => {
+    conn.query("SELECT * FROM producto", (err, rs) => {
       if (err) {
         errors.push({ error: "Error al actualizar la tabla" });
         return res.render("user/kardex", { errors });
       }
-
-      //Debbug
-      const producto = new Producto();
-      producto.setId = rs[0].id_producto;
-      producto.setNombre = rs[0].nombre_producto;
-      producto.setCantidad = rs[0].cantidad_producto;
-      console.table(producto);
 
       res.render("user/kardex", {
         rs
@@ -29,12 +22,30 @@ const getPeps = (req, res) => {
   res.render("user/peps");
 };
 
+const addProduct = async (req, res) => {
+  console.log("Making saving");
+  const { nombre, cantidad, costo_unitario } = req.body;
+  const product = new Producto();
+  const costo_total = Number(cantidad) * Number(costo_unitario);
+
+  product.setNombre = nombre;
+  product.setCantidad = Number(cantidad);
+  product.setCostoUnitario = Number(costo_unitario);
+  product.setCostoTotal = costo_total;
+  delete product.id_producto;
+  console.table(product);
+
+  await saveProduct(req, product);
+  console.log("After product");
+  res.redirect("/products");
+};
+
 const getProducts = async (req, res) => {
   const errors = [];
 
   await new Promise((resolve, reject) => {
     req.getConnection((err, conn) => {
-      conn.query("SELECT * FROM inventario_db.producto", (err, rs) => {
+      conn.query("SELECT * FROM producto", (err, rs) => {
         if (err) {
           errors.push({ error: "Error al actualizar la tabla" });
           return res.render("user/show_products", { errors });
@@ -64,16 +75,18 @@ const makeAction = (req, res) => {
 
 const makePurchase = async (req, res) => {
   console.log("Making purchase =============================================");
-  const { cantidad, costo_unitario, costo_total, nombre } = req.body;
+  const { cantidad, costo_unitario, costo_total, articulo } = req.body;
   console.log(req.body);
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
+  console.log("After search detail");
   const {
     id_producto,
     nombre_producto,
     cantidad_producto,
     costo_unitario_producto,
     costo_total_producto
-  } = await searchProduct(req, nombre);
+  } = await searchProduct(req, articulo);
+  console.log("After search product");
 
   const detalle = new Detalle(id_detalle, nombre_detalle);
   //const producto = new Producto(cantidad, costo_unitario, costo_total, nombre);
@@ -94,13 +107,15 @@ const makePurchase = async (req, res) => {
   delete productoSQL.id_producto;
   console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
-  res.status(200).json({ detalle, productoSQL });
+  console.log("After Updating");
+  //res.status(200).json({ detalle, productoSQL });
+  res.redirect("/kardex");
 };
 
 const makeSale = async (req, res) => {
   console.log("Making sale =============================================");
 
-  const { cantidad, costo_unitario, costo_total, nombre } = req.body;
+  const { cantidad, costo_unitario, costo_total, articulo } = req.body;
 
   console.log(req.body);
 
@@ -111,7 +126,7 @@ const makeSale = async (req, res) => {
     cantidad_producto,
     costo_unitario_producto,
     costo_total_producto
-  } = await searchProduct(req, nombre);
+  } = await searchProduct(req, articulo);
 
   const detalle = new Detalle(id_detalle, nombre_detalle);
   //const producto = new Producto(cantidad, costo_unitario, costo_total, nombre);
@@ -132,10 +147,12 @@ const makeSale = async (req, res) => {
   delete productoSQL.id_producto;
   console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
-  res.status(200).json({ detalle, productoSQL });
+  //res.status(200).json({ detalle, productoSQL });
+  res.redirect("/kardex");
 };
 
 async function searchDetail(req, detail) {
+  console.log("Searching detail", detail);
   return await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(
@@ -151,6 +168,7 @@ async function searchDetail(req, detail) {
 }
 
 async function searchProduct(req, detail) {
+  console.log("Searching product", detail);
   return await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(
@@ -166,6 +184,7 @@ async function searchProduct(req, detail) {
 }
 
 async function updateProduct(req, product, id_producto) {
+  console.log("Updating product");
   await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(
@@ -180,7 +199,26 @@ async function updateProduct(req, product, id_producto) {
   });
 }
 
+async function saveProduct(req, product) {
+  console.log("Saving product");
+  console.table(product);
+  await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `INSERT INTO producto SET ?`,
+        [product],
+        (err, rs) => {
+          if (err) console.log(err);
+          console.log(rs);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
+
 module.exports = {
+  addProduct,
   makeAction,
   getKardex,
   getPeps,

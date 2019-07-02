@@ -1,5 +1,4 @@
 <div>
-    <p>{{productos}}</p>
     <div class="card mt-4 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Artículo</strong>
@@ -7,7 +6,7 @@
 
         <div class="card-body">
 
-            <form class="text-center" style="color: #00838f;">
+            <form action="/add-product" method="POST" class="text-center" style="color: #00838f;">
 
                 <div class="md-form mt-0">
                     <input type="text" name="nombre" class="form-control mb-4" autofocus placeholder="Nombre">
@@ -30,7 +29,7 @@
 
                 <div class="md-form-row">
                     <div class="col">
-                        <a class="btn btn-sm btn-customer my-4">Aceptar</a>
+                        <button class="btn btn-sm btn-customer my-4" type="submit">Aceptar</button>
                         <a class="btn btn-danger btn-sm my-4" href="#">Cancelar</a>
                     </div>
                 </div>
