@@ -17,5 +17,3 @@ y compras) en una cuenta, por medio de los métodos _Promedio ponderado_ _PEPS_
 - [Cristian Del río](https://github.com/CristianJDelRio)
 - [Sergio Mercado](https://github.com/SergioMercado)
 - [Maicol Vergara](https://github.com/LuisFuenTech/kardex-peps-web#Autores)
-
-_Sí, así es, somos ¡Tocayos! separados al nacer_
