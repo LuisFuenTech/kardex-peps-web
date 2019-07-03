@@ -12,8 +12,13 @@ const flash = require("connect-flash");
 const navbarData = require("./data/nav-bar");
 const mysql = require("mysql");
 const myConnection = require("express-myconnection");
+
+//Database
 const port_sql = process.env.PORT_SQL || 3306;
-const dbUrl = process.env.MONGODB_URL;
+const url_sql = process.env.MYSQL_URL || "localhost";
+const user_sql = process.env.MYSQL_USER || "root";
+const password_sql = process.env.MYSQL_PSWD || "";
+const db_sql = process.env.MYSQL_DB || "inventario_db";
 
 //Routes
 const { userRoutes } = require("./users/index");
@@ -49,11 +54,11 @@ app.use(
   myConnection(
     mysql,
     {
-      host: "bkw1eve2degduneprzqb-mysql.services.clever-cloud.com",
-      port: 3306,
-      user: "ulzpcaupn2k67g5p",
-      password: "nYbIFrkp81DumLIMrOvh",
-      database: "bkw1eve2degduneprzqb"
+      host: url_sql,
+      port: port_sql,
+      user: user_sql,
+      password: password_sql,
+      database: db_sql
     },
     "single"
   )
