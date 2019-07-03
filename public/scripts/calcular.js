@@ -1,5 +1,4 @@
 function valorTotal() {
-  console.log("Change");
   const cantidad = Number(document.getElementsByName("cantidad")[0].value);
   const costo_unitario = Number(
     document.getElementsByName("costo_unitario")[0].value
