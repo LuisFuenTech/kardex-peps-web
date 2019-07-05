@@ -1,5 +1,5 @@
-<div>
-    <div class="card mt-4 mb-4 ">
+<div class="col-md-3 mx-auto mt-4">
+    <div class="card mt-0 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Acción</strong>
         </h5>
@@ -10,20 +10,22 @@
 
                 <div class="form-row">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="accion" id="inlineRadio1" value="compra" checked>
+                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion"
+                            id="inlineRadio1" value="compra" checked>
                         <label class="form-check-label" for="inlineRadio1">Compra</label>
                     </div>
 
                     <div class="col-2"></div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="accion" id="inlineRadio2" value="venta">
+                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion"
+                            id="inlineRadio2" value="venta">
                         <label class="form-check-label" for="inlineRadio2">Venta</label>
                     </div>
                 </div>
 
                 <div class="md-form mb-0">
-                    <select class="custom-select" name="articulo">
+                    <select onclick="handleAction(); valorTotal()" class="custom-select" name="articulo">
                         <option selected>Artículo</option>
 
                         {{#each productos}}
@@ -36,13 +38,15 @@
                 <div class="form-row">
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="cantidad" class="form-control mb-4" autofocus placeholder="Cantidad" oninput="valorTotal()">
+                            <input type="text" name="cantidad" class="form-control mb-4" autofocus
+                                placeholder="Cantidad" onclick="valorTotal()" oninput="valorTotal()">
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="costo_unitario" class="form-control mb-4" placeholder="Costo unitario" oninput="valorTotal()">
+                            <input type="text" name="costo_unitario" class="form-control mb-4"
+                                placeholder="Costo unitario" onclick="valorTotal()" oninput="valorTotal()">
                         </div>
                     </div>
                 </div>
@@ -62,5 +66,5 @@
     </div>
 </div>
 
-<script src="/scripts/calcular.js">
+<script src="/scripts/actions.js">
 </script>

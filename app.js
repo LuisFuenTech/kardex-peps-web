@@ -14,10 +14,10 @@ const mysql = require("mysql");
 const myConnection = require("express-myconnection");
 
 //Database
-const port_sql = process.env.PORT_SQL || 3306;
+const port_sql = process.env.PORT_SQL || 3307;
 const url_sql = process.env.MYSQL_URL || "localhost";
 const user_sql = process.env.MYSQL_USER || "root";
-const password_sql = process.env.MYSQL_PSWD || "";
+const password_sql = process.env.MYSQL_PSWD || "Mysql@fuentech2018";
 const db_sql = process.env.MYSQL_DB || "inventario_db";
 
 //Routes

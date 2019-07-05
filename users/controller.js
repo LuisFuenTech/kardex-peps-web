@@ -1,5 +1,8 @@
 const { Producto, Detalle } = require("../models/index");
 const simu = require("../data/simulator");
+let product = {};
+let detalle = {};
+let productoSQL = {};
 
 const getKardex = (req, res) => {
   const errors = [];
@@ -41,7 +44,7 @@ const getPeps = async (req, res) => {
 const addProduct = async (req, res) => {
   console.log("Making saving");
   const { nombre, cantidad, costo_unitario } = req.body;
-  const product = new Producto();
+  product = new Producto();
   const costo_total = Number(cantidad) * Number(costo_unitario);
 
   product.setNombre = nombre;
@@ -82,11 +85,16 @@ const getAbout = (req, res) => {
 
 const makeAction = (req, res) => {
   console.log("Making action =====================");
-  const { accion } = req.body;
+  const { accion, articulo } = req.body;
   console.log("Making action ===================== ", accion);
 
-  if (accion) accion === "compra" ? makePurchase(req, res) : makeSale(req, res);
-  else res.render("user/");
+  if (articulo === "Artículo") {
+    req.flash("error_msg", "Seleccione un artículo");
+    return res.redirect("/kardex");
+  } else {
+    if (accion)
+      accion === "compra" ? makePurchase(req, res) : makeSale(req, res);
+  }
 };
 
 const makePurchase = async (req, res) => {
@@ -95,7 +103,7 @@ const makePurchase = async (req, res) => {
   console.log(req.body);
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
   console.log("After search detail");
-  const {
+  var {
     id_producto,
     nombre_producto,
     cantidad_producto,
@@ -104,9 +112,8 @@ const makePurchase = async (req, res) => {
   } = await searchProduct(req, articulo);
   console.log("After search product");
 
-  const detalle = new Detalle(id_detalle, nombre_detalle);
-  //const producto = new Producto(cantidad, costo_unitario, costo_total, nombre);
-  const productoSQL = new Producto(
+  detalle = new Detalle(id_detalle, nombre_detalle);
+  productoSQL = new Producto(
     nombre_producto,
     cantidad_producto,
     costo_unitario_producto,
@@ -124,7 +131,6 @@ const makePurchase = async (req, res) => {
   console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
   console.log("After Updating");
-  //res.status(200).json({ detalle, productoSQL });
   res.redirect("/kardex");
 };
 
@@ -136,17 +142,22 @@ const makeSale = async (req, res) => {
   console.log(req.body);
 
   const { id_detalle, nombre_detalle } = await searchDetail(req, "venta");
-  const {
-    id_producto,
-    nombre_producto,
-    cantidad_producto,
-    costo_unitario_producto,
-    costo_total_producto
-  } = await searchProduct(req, articulo);
 
-  const detalle = new Detalle(id_detalle, nombre_detalle);
+  try {
+    var {
+      id_producto,
+      nombre_producto,
+      cantidad_producto,
+      costo_unitario_producto,
+      costo_total_producto
+    } = await searchProduct(req, articulo);
+  } catch (error) {
+    console.log("Search product failed:", error);
+  }
+
+  detalle = new Detalle(id_detalle, nombre_detalle);
   //const producto = new Producto(cantidad, costo_unitario, costo_total, nombre);
-  const productoSQL = new Producto(
+  productoSQL = new Producto(
     nombre_producto,
     cantidad_producto,
     costo_unitario_producto,
@@ -154,17 +165,24 @@ const makeSale = async (req, res) => {
     id_producto
   );
 
+  console.log("Before changes");
   console.table(productoSQL);
 
   productoSQL.ventaCantidad(Number(cantidad));
   productoSQL.ventaTotal(Number(Number(costo_total).toFixed(2)));
   productoSQL.ventaUnitaria();
 
-  delete productoSQL.id_producto;
+  console.log("After changes");
   console.table(productoSQL);
+
+  if (productoSQL.cantidad_producto === 0) {
+    deleteProduct(req, productoSQL, id_producto);
+    return res.redirect("/kardex");
+  }
+
   await updateProduct(req, productoSQL, id_producto);
-  //res.status(200).json({ detalle, productoSQL });
   res.redirect("/kardex");
+  //res.status(200).json({ detalle, productoSQL });
 };
 
 async function searchDetail(req, detail) {
@@ -182,6 +200,13 @@ async function searchDetail(req, detail) {
     });
   });
 }
+
+const apiSearchProduct = async (req, res) => {
+  const { detail } = req.params;
+  console.log("Api search product:", detail);
+  productoSQL = await searchProduct(req, detail);
+  res.status(200).json(productoSQL);
+};
 
 async function searchProduct(req, detail) {
   console.log("Searching product", detail);
@@ -215,6 +240,22 @@ async function updateProduct(req, product, id_producto) {
   });
 }
 
+async function deleteProduct(req, product, id_producto) {
+  console.log("Deleting product");
+  await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `DELETE FROM producto WHERE id_producto = ? `,
+        [id_producto],
+        (err, rs) => {
+          if (err) console.log(err);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
+
 async function saveProduct(req, product) {
   console.log("Saving product");
   console.table(product);
@@ -237,5 +278,6 @@ module.exports = {
   getProducts,
   getAbout,
   makePurchase,
-  makeSale
+  makeSale,
+  apiSearchProduct
 };

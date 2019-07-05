@@ -7,6 +7,9 @@ app.get("/peps", userController.getPeps);
 app.get("/products", userController.getProducts);
 app.get("/about", userController.getAbout);
 
+//API
+app.get("/get-product/:detail", userController.apiSearchProduct);
+
 //Post
 app.post("/add-product", userController.addProduct);
 app.post("/action", userController.makeAction);
