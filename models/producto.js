@@ -7,18 +7,18 @@ module.exports = class Producto {
     id = null
   ) {
     this.nombre_producto = nombre;
-    this.cantidad_producto = cantidad;
-    this.costo_unitario_producto = costo_unitario;
-    this.costo_total_producto = costo_total;
+    this.cantidad_producto = Number(cantidad);
+    this.costo_unitario_producto = Number(costo_unitario);
+    this.costo_total_producto = Number(costo_total);
     this.id_producto = id;
   }
 
   compraCantidad(cantidad) {
-    this.cantidad_producto += cantidad;
+    this.cantidad_producto += Number(cantidad);
   }
 
   compraTotal(total) {
-    this.costo_total_producto += total;
+    this.costo_total_producto += Number(total);
   }
 
   compraUnitaria() {
@@ -28,17 +28,22 @@ module.exports = class Producto {
   }
 
   ventaCantidad(cantidad) {
-    this.cantidad_producto -= cantidad;
+    this.cantidad_producto -= Number(cantidad);
   }
 
   ventaUnitaria() {
-    this.costo_unitario_producto = Number(
+    let calculoUnitario = Number(
       (this.costo_total_producto / this.cantidad_producto).toFixed(2)
     );
+    this.costo_unitario_producto = Boolean(calculoUnitario)
+      ? 0
+      : calculoUnitario;
+
+    console.log("Venta valor unitario:", this.costo_unitario_producto);
   }
 
   ventaTotal(total) {
-    this.costo_total_producto -= total;
+    this.costo_total_producto -= Number(total);
   }
 
   set setId(id) {

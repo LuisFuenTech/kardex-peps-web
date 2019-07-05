@@ -6,6 +6,7 @@ let kardex = {};
 let productoSQL = {};
 
 const getKardex = (req, res) => {
+  const { articulo } = req.params;
   const errors = [];
 
   req.getConnection((err, conn) => {
@@ -16,9 +17,49 @@ const getKardex = (req, res) => {
       }
 
       res.render("user/kardex", {
-        rs
+        rs,
+        item: articulo
       });
     });
+  });
+};
+
+const apiShowKardex = (req, res) => {
+  const { articulo } = req.params;
+  const errors = [];
+
+  req.getConnection((err, conn) => {
+    conn.query(
+      `SELECT 
+          DATE_FORMAT(kardex.fecha, "%d-%m-%Y") as fecha,
+          detalle.nombre_detalle,
+          kardex.entrada_cantidad,
+          kardex.entrada_unitario,
+          kardex.entrada_total,
+          kardex.salida_cantidad,
+          kardex.salida_unitario,
+          kardex.salida_total,
+          kardex.producto_cantidad,
+          kardex.producto_unitario,
+          kardex.producto_total
+        FROM kardex
+        INNER JOIN detalle
+          ON detalle.id_detalle = kardex.id_detalle
+        INNER JOIN producto
+          ON producto.id_producto = kardex.id_producto
+        WHERE producto.nombre_producto = ?`,
+      [articulo],
+      (err, rs) => {
+        if (err) {
+          errors.push({ error: "Error al actualizar la tabla" });
+          return res.render("user/kardex", { errors });
+        }
+
+        console.log(rs);
+        console.table(rs[0]);
+        res.status(200).json(rs);
+      }
+    );
   });
 };
 
@@ -44,18 +85,28 @@ const getPeps = async (req, res) => {
 
 const addProduct = async (req, res) => {
   console.log("Making saving");
+  const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
   const { nombre, cantidad, costo_unitario } = req.body;
+
   product = new Producto();
+  detalle = new Detalle(id_detalle, nombre_detalle);
+
   const costo_total = Number(cantidad) * Number(costo_unitario);
 
   product.setNombre = nombre;
   product.setCantidad = Number(cantidad);
   product.setCostoUnitario = Number(costo_unitario);
-  product.setCostoTotal = costo_total;
+  product.setCostoTotal = Number(costo_total);
+  const sql = await saveProduct(req, product);
+  product.setId = sql;
+
+  kardex = new Kardex(detalle, product);
+  await saveKardex(req, kardex);
+
   delete product.id_producto;
   console.table(product);
 
-  await saveProduct(req, product);
+  console.log("SQL", sql);
   console.log("After product");
   res.redirect("/products");
 };
@@ -128,23 +179,27 @@ const makePurchase = async (req, res) => {
   productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
   productoSQL.compraUnitaria();
 
-  kardex = new kardex(detalle, productoSQL);
-  kardex.setEntradaCantidad = await saveKardex(req, detalle, productoSQL);
+  kardex = new Kardex(detalle, productoSQL);
+  kardex.setEntradaCantidad = cantidad;
+  kardex.setEntradaUnitario = costo_unitario;
+  kardex.setEntradaTotal = costo_total;
+
+  console.table(detalle);
+  console.table(kardex);
+  await saveKardex(req, kardex);
   delete productoSQL.id_producto;
 
   console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
   console.log("After Updating");
-  res.redirect("/kardex");
+  //res.redirect("/kardex");
+  res.redirect(`/kardex/${articulo}`);
 };
 
 const makeSale = async (req, res) => {
   console.log("Making sale =============================================");
-
   const { cantidad, costo_unitario, costo_total, articulo } = req.body;
-
   console.log(req.body);
-
   const { id_detalle, nombre_detalle } = await searchDetail(req, "venta");
 
   try {
@@ -177,14 +232,25 @@ const makeSale = async (req, res) => {
   productoSQL.ventaUnitaria();
 
   console.log("After changes");
+
+  kardex = new Kardex(detalle, productoSQL);
+  kardex.setSalidaCantidad = cantidad;
+  kardex.setSalidaUnitario = costo_unitario;
+  kardex.setSalidaTotal = costo_total;
+
   console.table(productoSQL);
 
   if (productoSQL.cantidad_producto === 0) {
-    deleteProduct(req, productoSQL, id_producto);
+    await saveKardex(req, kardex);
+    //deleteProduct(req, productoSQL, id_producto);
+    delete productoSQL.id_producto;
+
     return res.redirect("/kardex");
   }
 
+  await saveKardex(req, kardex);
   await updateProduct(req, productoSQL, id_producto);
+  //res.redirect(`/show/${articulo}`);
   res.redirect("/kardex");
   //res.status(200).json({ detalle, productoSQL });
 };
@@ -244,12 +310,23 @@ async function updateProduct(req, product, id_producto) {
   });
 }
 
-async function saveKardex(req, detail, product) {
-  console.log("Updating kardex");
+async function saveKardex(req, kardex) {
+  console.log("Saving kardex");
 
   await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
-      conn.query(`INSERT INTO kardex Set`);
+      conn.query(
+        `INSERT INTO kardex 
+          SET fecha = (SELECT CURDATE()), 
+              hora = (SELECT SUBTIME(CURTIME(), "5:0:0.0")), 
+              ?`,
+        [kardex],
+        (err, rs) => {
+          if (err) console.log(err);
+          console.log(rs);
+          resolve();
+        }
+      );
     });
   });
 }
@@ -273,12 +350,12 @@ async function deleteProduct(req, product, id_producto) {
 async function saveProduct(req, product) {
   console.log("Saving product");
   console.table(product);
-  await new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(`INSERT INTO producto SET ?`, [product], (err, rs) => {
         if (err) console.log(err);
         console.log(rs);
-        resolve(rs[0]);
+        resolve(rs.insertId);
       });
     });
   });
@@ -293,5 +370,6 @@ module.exports = {
   getAbout,
   makePurchase,
   makeSale,
-  apiSearchProduct
+  apiSearchProduct,
+  apiShowKardex
 };

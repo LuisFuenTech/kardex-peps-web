@@ -1,7 +1,7 @@
 module.exports = class Kardex {
   constructor(detalle, producto) {
-    this.fecha = "CURDATE()";
-    this.hora = `SUBTIME(CURTIME(), "5:0:0")`;
+    //this.fecha = `(SELECT CURDATE())`;
+    //this.hora = `(SELECT SUBTIME(CURTIME(), "5:0:0"))`;
     this.id_detalle = detalle.id_detalle;
     this.id_producto = producto.id_producto;
     this.producto_cantidad = producto.cantidad_producto;
@@ -18,7 +18,7 @@ module.exports = class Kardex {
   }
 
   set setEntradaTotal(total) {
-    this.entrada_total = total;
+    this.entrada_total = Number(total);
   }
 
   set setSalidaCantidad(cantidad) {
@@ -30,6 +30,6 @@ module.exports = class Kardex {
   }
 
   set setSalidaTotal(total) {
-    this.salida_total = total;
+    this.salida_total = Number(total);
   }
 };

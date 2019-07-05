@@ -1,22 +1,22 @@
 module.exports = class Detalle {
   constructor(id = "", nombre) {
-    this.id = id;
-    this.nombre = nombre;
+    this.id_detalle = id;
+    this.nombre_detalle = nombre;
   }
 
   set setId(id) {
-    this.id = id;
+    this.id_detalle = id;
   }
 
   set setNombre(nombre) {
-    this.nombre = nombre;
+    this.nombre_detalle = nombre;
   }
 
   get getId() {
-    return this.id;
+    return this.id_detalle;
   }
 
   get getNombre() {
-    return this.nombre;
+    return this.nombre_detalle;
   }
 };

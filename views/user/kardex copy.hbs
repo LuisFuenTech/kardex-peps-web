@@ -1,5 +1,5 @@
 <div class="row">
-    {{> actions productos = rs }}
+    {{> actions productos = rs}}
 
     <div class="col mx-auto mt-4">
         <div class="table-wrapper-scroll-y my-custom-scrollbar mt-20">
@@ -36,7 +36,25 @@
                             <th>CT</th>
                         </tr>
                     </thead>
-                    <tbody id="kardex-table" align="center">
+                    <tbody align="center">
+                        {{#each rs}}
+                        <tr>
+                            <th>{{this.fecha}}</th>
+                            <td>{{this.nombre_detalle}}</td>
+                            <td>{{this.entrada_cantidad}}</td>
+                            <td>{{this.entrada_unitario}}</td>
+                            <td>{{this.entrada_total}}</td>
+
+                            <td>{{this.salida_cantidad}}</td>
+                            <td>{{this.salida_unitario}}</td>
+                            <td>{{this.salida_total}}</td>
+
+                            <td>{{this.producto_cantidad}}</td>
+                            <td>{{this.producto_unitario}}</td>
+                            <td>{{this.producto_total}}</td>
+                        </tr>
+                        {{/each}}
+
                     </tbody>
                 </table>
             </div>
