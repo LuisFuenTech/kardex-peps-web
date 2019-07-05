@@ -36,8 +36,8 @@ module.exports = class Producto {
       (this.costo_total_producto / this.cantidad_producto).toFixed(2)
     );
     this.costo_unitario_producto = Boolean(calculoUnitario)
-      ? 0
-      : calculoUnitario;
+      ? calculoUnitario
+      : 0;
 
     console.log("Venta valor unitario:", this.costo_unitario_producto);
   }
