@@ -1,7 +1,8 @@
-const { Producto, Detalle } = require("../models/index");
+const { Producto, Detalle, Kardex } = require("../models/index");
 const simu = require("../data/simulator");
 let product = {};
 let detalle = {};
+let kardex = {};
 let productoSQL = {};
 
 const getKardex = (req, res) => {
@@ -127,7 +128,10 @@ const makePurchase = async (req, res) => {
   productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
   productoSQL.compraUnitaria();
 
+  kardex = new kardex(detalle, productoSQL);
+  kardex.setEntradaCantidad = await saveKardex(req, detalle, productoSQL);
   delete productoSQL.id_producto;
+
   console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
   console.log("After Updating");
@@ -236,6 +240,16 @@ async function updateProduct(req, product, id_producto) {
           resolve(rs[0]);
         }
       );
+    });
+  });
+}
+
+async function saveKardex(req, detail, product) {
+  console.log("Updating kardex");
+
+  await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(`INSERT INTO kardex Set`);
     });
   });
 }

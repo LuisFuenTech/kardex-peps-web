@@ -14,7 +14,7 @@ const mysql = require("mysql");
 const myConnection = require("express-myconnection");
 
 //Database
-const port_sql = process.env.PORT_SQL || 3307;
+const port_sql = process.env.MYSQL_PORT || 3307;
 const url_sql = process.env.MYSQL_URL || "localhost";
 const user_sql = process.env.MYSQL_USER || "root";
 const password_sql = process.env.MYSQL_PSWD || "Mysql@fuentech2018";
