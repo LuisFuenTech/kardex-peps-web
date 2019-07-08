@@ -1,4 +1,5 @@
 <div class="col-md-3 mx-auto mt-4">
+
     <div class="card mt-0 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Acción</strong>
@@ -7,24 +8,25 @@
         <div class="card-body">
 
             <form action="/action" method="POST" class="text-center" style="color: #00838f;">
+                <p>Action {{articulo}}</p>
 
                 <div class="form-row">
                     <div class="form-check">
-                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion" id="inlineRadio1" value="compra" checked>
-                        <label class="form-check-label" for="inlineRadio1">Compra</label>
+                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion" id="compra_check" value="compra" checked>
+                        <label class="form-check-label" for="compra_check">Compra</label>
                     </div>
 
                     <div class="col-2"></div>
 
                     <div class="form-check">
-                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion" id="inlineRadio2" value="venta">
-                        <label class="form-check-label" for="inlineRadio2">Venta</label>
+                        <input onclick="handleAction()" class="form-check-input" type="radio" name="accion" id="venta_check" value="venta">
+                        <label class="form-check-label" for="venta_check">Venta</label>
                     </div>
                 </div>
 
                 <div class="md-form mb-0">
-                    <select onchange="showKardex()" onclick="handleAction(); valorTotal()" class="custom-select" name="articulo">
-                        <option selected>Artículo</option>
+                    <select onchange="showKardex()" onclick="handleAction(); valorTotal()" class="custom-select" id="articulo" name="articulo">
+                        <option>Artículo</option>
 
                         {{#each productos}}
                         <option>{{this.nombre_producto}}</option>
@@ -36,27 +38,28 @@
                 <div class="form-row">
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="cantidad" class="form-control mb-4" autofocus placeholder="Cantidad" onclick="valorTotal()" oninput="valorTotal()">
+                            <input type="text" id="cantidad" name="cantidad" class="form-control mb-4" autofocus placeholder="Cantidad" onclick="valorTotal()" oninput="valorTotal()">
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="costo_unitario" class="form-control mb-4" placeholder="Costo unitario" onclick="valorTotal()" oninput="valorTotal()">
+                            <input type="text" id="costo_unitario" name="costo_unitario" class="form-control mb-4" placeholder="Costo unitario" onclick="valorTotal()" oninput="valorTotal()">
                         </div>
                     </div>
                 </div>
 
                 <div class="md-form mt-0">
-                    <input type="text" name="costo_total" class="form-control mb-4" placeholder="Costo total" readonly>
+                    <input type="text" id="costo_total" name="costo_total" class="form-control mb-4" placeholder="Costo total" readonly>
                 </div>
 
                 <div class="md-form-row">
                     <div class="col">
-                        <button class="btn btn-sm btn-customer my-4" type="submit">Aceptar</button>
-                        <a class="btn btn-sm btn-danger my-4" href="#">Cancelar</a>
+                        <button class="btn btn-sm btn-customer my-0" type="submit">Aceptar </button>
+                        <a class="btn btn-sm btn-danger my-1" href="#">Cancelar</a>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>

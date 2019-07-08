@@ -1,5 +1,5 @@
 const { Producto, Detalle, Kardex } = require("../models/index");
-const simu = require("../data/simulator");
+const { simulator } = require("../data/index");
 let product = {};
 let detalle = {};
 let kardex = {};
@@ -55,8 +55,6 @@ const apiShowKardex = (req, res) => {
           return res.render("user/kardex", { errors });
         }
 
-        console.log(rs);
-        console.table(rs[0]);
         res.status(200).json(rs);
       }
     );
@@ -104,10 +102,6 @@ const addProduct = async (req, res) => {
   await saveKardex(req, kardex);
 
   delete product.id_producto;
-  console.table(product);
-
-  console.log("SQL", sql);
-  console.log("After product");
   res.redirect("/products");
 };
 
@@ -136,9 +130,8 @@ const getAbout = (req, res) => {
 };
 
 const makeAction = (req, res) => {
-  console.log("Making action =====================");
   const { accion, articulo } = req.body;
-  console.log("Making action ===================== ", accion);
+  console.log("Making action ==> ", accion);
 
   if (articulo === "Artículo") {
     req.flash("error_msg", "Seleccione un artículo");
@@ -150,19 +143,21 @@ const makeAction = (req, res) => {
 };
 
 const makePurchase = async (req, res) => {
-  console.log("Making purchase =============================================");
+  console.log("Making purchase ==>");
   const { cantidad, costo_unitario, costo_total, articulo } = req.body;
-  console.log(req.body);
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
-  console.log("After search detail");
-  var {
-    id_producto,
-    nombre_producto,
-    cantidad_producto,
-    costo_unitario_producto,
-    costo_total_producto
-  } = await searchProduct(req, articulo);
-  console.log("After search product");
+
+  try {
+    var {
+      id_producto,
+      nombre_producto,
+      cantidad_producto,
+      costo_unitario_producto,
+      costo_total_producto
+    } = await searchProduct(req, articulo);
+  } catch (error) {
+    console.log("Search product failed:", error);
+  }
 
   detalle = new Detalle(id_detalle, nombre_detalle);
   productoSQL = new Producto(
@@ -173,8 +168,6 @@ const makePurchase = async (req, res) => {
     id_producto
   );
 
-  console.table(productoSQL);
-
   productoSQL.compraCantidad(Number(cantidad));
   productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
   productoSQL.compraUnitaria();
@@ -184,22 +177,15 @@ const makePurchase = async (req, res) => {
   kardex.setEntradaUnitario = costo_unitario;
   kardex.setEntradaTotal = costo_total;
 
-  console.table(detalle);
-  console.table(kardex);
   await saveKardex(req, kardex);
   delete productoSQL.id_producto;
-
-  console.table(productoSQL);
   await updateProduct(req, productoSQL, id_producto);
-  console.log("After Updating");
-  //res.redirect("/kardex");
   res.redirect(`/kardex/${articulo}`);
 };
 
 const makeSale = async (req, res) => {
-  console.log("Making sale =============================================");
+  console.log("Making sale ==>");
   const { cantidad, costo_unitario, costo_total, articulo } = req.body;
-  console.log(req.body);
   const { id_detalle, nombre_detalle } = await searchDetail(req, "venta");
 
   try {
@@ -215,7 +201,6 @@ const makeSale = async (req, res) => {
   }
 
   detalle = new Detalle(id_detalle, nombre_detalle);
-  //const producto = new Producto(cantidad, costo_unitario, costo_total, nombre);
   productoSQL = new Producto(
     nombre_producto,
     cantidad_producto,
@@ -224,25 +209,17 @@ const makeSale = async (req, res) => {
     id_producto
   );
 
-  console.log("Before changes");
-  console.table(productoSQL);
-
   productoSQL.ventaCantidad(Number(cantidad));
   productoSQL.ventaTotal(Number(Number(costo_total).toFixed(2)));
   productoSQL.ventaUnitaria();
-
-  console.log("After changes");
 
   kardex = new Kardex(detalle, productoSQL);
   kardex.setSalidaCantidad = cantidad;
   kardex.setSalidaUnitario = costo_unitario;
   kardex.setSalidaTotal = costo_total;
 
-  console.table(productoSQL);
-
   if (productoSQL.cantidad_producto === 0) {
     await saveKardex(req, kardex);
-    //deleteProduct(req, productoSQL, id_producto);
     delete productoSQL.id_producto;
 
     return res.redirect("/kardex");
@@ -250,9 +227,7 @@ const makeSale = async (req, res) => {
 
   await saveKardex(req, kardex);
   await updateProduct(req, productoSQL, id_producto);
-  //res.redirect(`/show/${articulo}`);
   res.redirect("/kardex");
-  //res.status(200).json({ detalle, productoSQL });
 };
 
 async function searchDetail(req, detail) {
@@ -323,7 +298,6 @@ async function saveKardex(req, kardex) {
         [kardex],
         (err, rs) => {
           if (err) console.log(err);
-          console.log(rs);
           resolve();
         }
       );
@@ -349,12 +323,10 @@ async function deleteProduct(req, product, id_producto) {
 
 async function saveProduct(req, product) {
   console.log("Saving product");
-  console.table(product);
   return await new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(`INSERT INTO producto SET ?`, [product], (err, rs) => {
         if (err) console.log(err);
-        console.log(rs);
         resolve(rs.insertId);
       });
     });

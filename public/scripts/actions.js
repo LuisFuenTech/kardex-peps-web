@@ -15,11 +15,11 @@ var socket = io();
 })();
 
 function valorTotal() {
-  const cantidad = Number(document.getElementsByName("cantidad")[0].value);
+  const cantidad = Number(document.getElementById("cantidad").value);
   const costo_unitario = Number(
-    document.getElementsByName("costo_unitario")[0].value
+    document.getElementById("costo_unitario").value
   );
-  const costo_total = document.getElementsByName("costo_total")[0];
+  const costo_total = document.getElementById("costo_total");
 
   socket.emit("client:costo", { costo: costo_unitario, me: "Luis" });
 
@@ -33,9 +33,9 @@ function valorTotal() {
 }
 
 async function handleAction() {
-  const accion = document.getElementsByName("accion")[1].checked;
-  const articulo = document.getElementsByName("articulo")[0];
-  const costo_unitario = document.getElementsByName("costo_unitario")[0];
+  const accion = document.getElementById("venta_check").checked;
+  const articulo = document.getElementById("articulo");
+  const costo_unitario = document.getElementById("costo_unitario");
 
   if (accion) {
     costo_unitario.setAttribute("readonly", "");
@@ -51,7 +51,7 @@ async function handleAction() {
 }
 
 async function showKardex() {
-  const articulo = document.getElementsByName("articulo")[0].value;
+  const articulo = document.getElementById("articulo").value;
   let { data } = await axios.get(`/show/${articulo}`);
 
   console.log(data);
@@ -78,5 +78,6 @@ async function showKardex() {
     `;
   });
 
-  socket.emit("client:kardex", table);
+  document.getElementById("kardex-table").innerHTML = table;
+  //socket.emit("client:kardex", table);
 }
