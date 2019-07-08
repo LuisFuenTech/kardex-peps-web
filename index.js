@@ -1,23 +1,32 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-const { database } = require("./config/index");
 
-const moment = require("moment");
+const { server } = require("./config/index");
 
-const hour = moment()
-  .subtract("5", "hours")
-  .format("HH:mm:ss");
-const date = moment()
-  .add("5", "hours")
-  .format("MMM DD YYYY");
+const socketIO = require("socket.io");
+const io = socketIO(server);
 
-console.log(`Time: ${hour}`);
-console.log(`Date: ${date}`);
+io.on("connection", socket => {
+  console.log(`New connection: ${socket.id}`);
 
-console.log(`Full date: ${date} ${hour}`);
-console.log(
-  moment()
-    .subtract("5", "hours")
-    .toJSON()
-);
+  //Recibe datos de cliente y reenvía
+  socket.on("client:costo", data => {
+    io.sockets.emit("server:costo", data.costo);
+    socket.broadcast.emit("server:msg", `${socket.id} is typing...`);
+
+    console.log(data);
+  });
+
+  socket.on("client:kardex", data => {
+    io.sockets.emit("server:kardex", data);
+  });
+
+  socket.on("chat:typing", data => {
+    socket.broadcast.emit("server:type", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});

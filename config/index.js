@@ -1,3 +1,1 @@
-module.exports = {
-  database: require("./database")
-};
+module.exports.server = require("./server");

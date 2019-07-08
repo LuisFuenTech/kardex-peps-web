@@ -1,9 +1,27 @@
+var socket = io();
+
+(function() {
+  socket.on("server:costo", data => {
+    console.log("Costo:", data);
+  });
+
+  socket.on("server:msg", msg => {
+    console.log("Message:", msg);
+  });
+
+  socket.on("server:kardex", table => {
+    document.getElementById("kardex-table").innerHTML = table;
+  });
+})();
+
 function valorTotal() {
   const cantidad = Number(document.getElementsByName("cantidad")[0].value);
   const costo_unitario = Number(
     document.getElementsByName("costo_unitario")[0].value
   );
   const costo_total = document.getElementsByName("costo_total")[0];
+
+  socket.emit("client:costo", { costo: costo_unitario, me: "Luis" });
 
   if (isNaN(cantidad) | isNaN(costo_unitario) | !cantidad | !costo_unitario) {
     costo_total.value = "";
@@ -60,5 +78,5 @@ async function showKardex() {
     `;
   });
 
-  document.getElementById("kardex-table").innerHTML = table;
+  socket.emit("client:kardex", table);
 }
