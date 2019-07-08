@@ -1,7 +1,7 @@
 # Proyecto de Contabilidad y Costos
 
 Aplicación realizada para registrar los eventos de Control de inventarios (ventas
-y compras) en una cuenta, por medio de los métodos _Promedio ponderado_ _PEPS_.
+y compras) en una cuenta, por medio de los métodos: _Promedio ponderado_ _PEPS_.
 [Kardex Peps](https://kardex-io.herokuapp.com)
 
 ## Tecnlogías
