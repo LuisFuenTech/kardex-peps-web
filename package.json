@@ -1,32 +1,39 @@
 {
-  "name": "kardex-peps",
+  "name": "kardex-peps-web",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aplicación realizada para registrar los eventos de Control de inventarios (ventas\r y compras) en una cuenta, por medio de los métodos: _Promedio ponderado_ _PEPS_.\r [Kardex Peps](https://kardex-io.herokuapp.com)",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "kardex-peps-web": "WWW.js"
   },
-  "keywords": [],
-  "author": "Luis Fuentes <luisfuentes.au@gmail.com> (https://github.com/LuisFuenTech)",
-  "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^7.0.0",
-    "express": "^4.16.4",
-    "express-handlebars": "^3.0.2",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
     "express-myconnection": "^1.0.4",
-    "express-session": "^1.15.6",
+    "express-session": "^1.16.2",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
+    "morgan": "^1.9.1",
     "mysql": "^2.17.1",
     "socket.io": "^2.2.0"
   },
-  "devDependencies": {
-    "morgan": "^1.9.1",
-    "nodemon": "^1.18.9"
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luisfuentech/kardex-peps-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luisfuentech/kardex-peps-web/issues"
+  },
+  "homepage": "https://github.com/luisfuentech/kardex-peps-web#readme"
 }
