@@ -25,11 +25,11 @@
                 </div>
 
                 <div class="md-form mb-0">
-                    <select onchange="showKardex()" onclick="handleAction(); valorTotal()" class="custom-select" id="articulo" name="articulo">
+                    <select onclick="handleAction(); valorTotal()" class="custom-select" id="articulo" name="articulo">
                         <option>Artículo</option>
 
                         {{#each productos}}
-                        <option>{{this.nombre_producto}}</option>
+                        <option  {{#if this.selected}} selected='true' {{/if}}>{{this.nombre_producto}} </option>
                         {{/each}}
 
                     </select>

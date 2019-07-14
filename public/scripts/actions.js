@@ -1,6 +1,13 @@
 var socket = io();
 
 (function() {
+  const {href} = document.location
+  console.log('href', href)
+  var [arr] = href.match(/kardex\/.*/g)
+  const nombreArticulo = arr.split('/')[1]
+  console.log('Regex', nombreArticulo);
+  showKardex(nombreArticulo)
+
   socket.on("server:costo", data => {
     console.log("Costo:", data);
   });
@@ -50,9 +57,9 @@ async function handleAction() {
   }
 }
 
-async function showKardex() {
-  const articulo = document.getElementById("articulo").value;
-  let { data } = await axios.get(`/show/${articulo}`);
+async function showKardex(nombreArticulo) {
+  console.log('Nombre Articulo:', nombreArticulo)
+  let { data } = await axios.get(`/show/${nombreArticulo}`);
 
   console.log(data);
 
@@ -81,3 +88,11 @@ async function showKardex() {
   document.getElementById("kardex-table").innerHTML = table;
   //socket.emit("client:kardex", table);
 }
+
+function handleSelect(event){
+  const {target: {value: nombreArticulo}} = event
+  console.log('Llamado', nombreArticulo)
+  showKardex(nombreArticulo)
+}
+
+document.getElementById('articulo').addEventListener('change', handleSelect)

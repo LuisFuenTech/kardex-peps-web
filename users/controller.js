@@ -7,10 +7,17 @@ let productoSQL = {};
 
 const getKardex = (req, res) => {
   const { articulo } = req.params;
+  console.log('Articulo', articulo)
   const errors = [];
 
   req.getConnection((err, conn) => {
     conn.query("SELECT * FROM producto", (err, rs) => {
+
+      for(let [index, product] of rs.entries() )
+        if(product.nombre_producto == articulo)
+        rs[index].selected = true;
+
+
       if (err) {
         errors.push({ error: "Error al actualizar la tabla" });
         return res.render("user/kardex", { errors });
