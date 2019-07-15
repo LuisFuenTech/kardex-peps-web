@@ -1,16 +1,16 @@
 var socket = io();
 
 (function() {
-  const {href} = document.location
-  console.log('href', href)
-  var [arr] = href.match(/kardex\/.*/g)
-  const nombreArticulo = arr.split('/')[1]
-  console.log('Regex', nombreArticulo);
-  showKardex(nombreArticulo)
+  const { href } = document.location;
+  var [arr] = href.match(/kardex\/.*/g);
+  const nombreArticulo = arr.split("/")[1] || "Artículo";
+
+  showKardex(nombreArticulo);
 
   socket.on("server:costo", data => {
     console.log("Costo:", data);
   });
+  s;
 
   socket.on("server:msg", msg => {
     console.log("Message:", msg);
@@ -58,7 +58,7 @@ async function handleAction() {
 }
 
 async function showKardex(nombreArticulo) {
-  console.log('Nombre Articulo:', nombreArticulo)
+  console.log("Nombre Articulo:", nombreArticulo);
   let { data } = await axios.get(`/show/${nombreArticulo}`);
 
   console.log(data);
@@ -89,10 +89,12 @@ async function showKardex(nombreArticulo) {
   //socket.emit("client:kardex", table);
 }
 
-function handleSelect(event){
-  const {target: {value: nombreArticulo}} = event
-  console.log('Llamado', nombreArticulo)
-  showKardex(nombreArticulo)
+function handleSelect(event) {
+  const {
+    target: { value: nombreArticulo }
+  } = event;
+  console.log("Llamado", nombreArticulo);
+  showKardex(nombreArticulo);
 }
 
-document.getElementById('articulo').addEventListener('change', handleSelect)
+document.getElementById("articulo").addEventListener("change", handleSelect);
