@@ -17,7 +17,7 @@ const myConnection = require("express-myconnection");
 const port_sql = process.env.MYSQL_PORT || 3307;
 const url_sql = process.env.MYSQL_URL || "localhost";
 const user_sql = process.env.MYSQL_USER || "root";
-const password_sql = process.env.MYSQL_PSWD || "Mysql@fuentech2018";
+const password_sql = process.env.MYSQL_PSWD || "";
 const db_sql = process.env.MYSQL_DB || "inventario_db";
 
 //Routes
@@ -97,5 +97,9 @@ app.get("/", (req, res) => {
 });
 
 app.use(userRoutes);
+
+app.get("*", function(req, res) {
+  res.render("user/not_found");
+});
 
 module.exports = app;

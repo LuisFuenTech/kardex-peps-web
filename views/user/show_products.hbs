@@ -1,5 +1,5 @@
 <div class="row">
-    {{> new_article productos = rs}}
+    {{> new_article productos}}
 
     <div class="col mx-auto mt-4">
 
@@ -12,16 +12,8 @@
                             <th>Cantidad</th>
                         </tr>
                     </thead>
-                    <tbody align="center">
 
-                        {{#each rs}}
-                        <tr>
-                            <td>{{this.nombre_producto}}</td>
-                            <td>{{this.cantidad_producto}}</td>
-                        </tr>
-                        {{/each}}
-
-                    </tbody>
+                    <tbody id="product-table" align="center"> </tbody>
                 </table>
             </div>
         </div>

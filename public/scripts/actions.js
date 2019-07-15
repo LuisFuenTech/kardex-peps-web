@@ -1,24 +1,56 @@
 var socket = io();
 
+console.log("El primero");
+
+(async function showProducts() {
+  console.log("Productoooos");
+  let { data } = await axios.get("/get-products");
+  console.log(data);
+
+  let table = "";
+
+  data.forEach(item => {
+    table += `
+    <tr>
+      <td>${Boolean(item.nombre_producto) ? item.nombre_producto : ""}</td>
+      <td>${Boolean(item.cantidad_producto) ? item.cantidad_producto : ""}</td>
+    </tr>
+    `;
+  });
+
+  document.getElementById("product-table").innerHTML = table;
+  socket.emit("client:products", table);
+})();
+
+document.getElementById("articulo").addEventListener("change", handleSelect);
+
+// socket.on("server:costo", data => {
+//   console.log("Costo:", data);
+// });
+
+// socket.on("server:msg", msg => {
+//   console.log("Message:", msg);
+// });
+
 (function() {
+  socket.on("server:products", table => {
+    console.log("Server products");
+    alert(table);
+    document.getElementById("product-table").innerHTML = table;
+  });
+
+  socket.on("server:kardex", ({ table, nombreArticulo }) => {
+    const articulo = document.getElementById("articulo").value;
+
+    articulo == nombreArticulo
+      ? (document.getElementById("kardex-table").innerHTML = table)
+      : null;
+  });
+
   const { href } = document.location;
   var [arr] = href.match(/kardex\/.*/g);
   const nombreArticulo = arr.split("/")[1] || "Artículo";
-
   showKardex(nombreArticulo);
-
-  socket.on("server:costo", data => {
-    console.log("Costo:", data);
-  });
-  s;
-
-  socket.on("server:msg", msg => {
-    console.log("Message:", msg);
-  });
-
-  socket.on("server:kardex", table => {
-    document.getElementById("kardex-table").innerHTML = table;
-  });
 })();
 
 function valorTotal() {
@@ -28,7 +60,7 @@ function valorTotal() {
   );
   const costo_total = document.getElementById("costo_total");
 
-  socket.emit("client:costo", { costo: costo_unitario, me: "Luis" });
+  //socket.emit("client:costo", { costo: costo_unitario, me: "Luis" });
 
   if (isNaN(cantidad) | isNaN(costo_unitario) | !cantidad | !costo_unitario) {
     costo_total.value = "";
@@ -58,10 +90,7 @@ async function handleAction() {
 }
 
 async function showKardex(nombreArticulo) {
-  console.log("Nombre Articulo:", nombreArticulo);
   let { data } = await axios.get(`/show/${nombreArticulo}`);
-
-  console.log(data);
 
   let table = "";
 
@@ -86,15 +115,12 @@ async function showKardex(nombreArticulo) {
   });
 
   document.getElementById("kardex-table").innerHTML = table;
-  //socket.emit("client:kardex", table);
+  socket.emit("client:kardex", { table, nombreArticulo });
 }
 
 function handleSelect(event) {
   const {
     target: { value: nombreArticulo }
   } = event;
-  console.log("Llamado", nombreArticulo);
   showKardex(nombreArticulo);
 }
-
-document.getElementById("articulo").addEventListener("change", handleSelect);

@@ -10,6 +10,7 @@ app.get("/about", userController.getAbout);
 //API
 app.get("/get-product/:detail", userController.apiSearchProduct);
 app.get("/show/:articulo", userController.apiShowKardex);
+app.get("/get-products", userController.apiGetProducts);
 
 //Post
 app.post("/add-product", userController.addProduct);

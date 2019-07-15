@@ -7,16 +7,12 @@ let productoSQL = {};
 
 const getKardex = (req, res) => {
   const { articulo } = req.params;
-  console.log('Articulo', articulo)
   const errors = [];
 
   req.getConnection((err, conn) => {
     conn.query("SELECT * FROM producto", (err, rs) => {
-
-      for(let [index, product] of rs.entries() )
-        if(product.nombre_producto == articulo)
-        rs[index].selected = true;
-
+      for (let [index, product] of rs.entries())
+        if (product.nombre_producto == articulo) rs[index].selected = true;
 
       if (err) {
         errors.push({ error: "Error al actualizar la tabla" });
@@ -24,8 +20,7 @@ const getKardex = (req, res) => {
       }
 
       res.render("user/kardex", {
-        rs,
-        item: articulo
+        rs
       });
     });
   });
@@ -54,8 +49,9 @@ const apiShowKardex = (req, res) => {
           ON detalle.id_detalle = kardex.id_detalle
         INNER JOIN producto
           ON producto.id_producto = kardex.id_producto
-        WHERE producto.nombre_producto = ?`,
-      [articulo],
+        WHERE producto.nombre_producto = ?
+        ORDER by fecha, hora`,
+      [articulo.toLowerCase()],
       (err, rs) => {
         if (err) {
           errors.push({ error: "Error al actualizar la tabla" });
@@ -98,7 +94,7 @@ const addProduct = async (req, res) => {
 
   const costo_total = Number(cantidad) * Number(costo_unitario);
 
-  product.setNombre = nombre;
+  product.setNombre = nombre.toLowerCase();
   product.setCantidad = Number(cantidad);
   product.setCostoUnitario = Number(costo_unitario);
   product.setCostoTotal = Number(costo_total);
@@ -108,7 +104,6 @@ const addProduct = async (req, res) => {
   kardex = new Kardex(detalle, product);
   await saveKardex(req, kardex);
 
-  delete product.id_producto;
   res.redirect("/products");
 };
 
@@ -126,6 +121,25 @@ const getProducts = async (req, res) => {
         res.render("user/show_products", {
           rs
         });
+        //res.status(200).json(rs);
+        //resolve();
+      });
+    });
+  });
+};
+
+const apiGetProducts = async (req, res) => {
+  const errors = [];
+
+  await new Promise((resolve, reject) => {
+    req.getConnection((err, conn) => {
+      conn.query("SELECT * FROM producto", (err, rs) => {
+        if (err) {
+          errors.push({ error: "Error al actualizar la tabla" });
+          return res.render("user/show_products", { errors });
+        }
+
+        res.status(200).json(rs);
         resolve();
       });
     });
@@ -184,10 +198,20 @@ const makePurchase = async (req, res) => {
   kardex.setEntradaUnitario = costo_unitario;
   kardex.setEntradaTotal = costo_total;
 
-  await saveKardex(req, kardex);
-  delete productoSQL.id_producto;
-  await updateProduct(req, productoSQL, id_producto);
-  res.redirect(`/kardex/${articulo}`);
+  console.table(detalle);
+  console.table(productoSQL);
+  console.table(kardex);
+
+  Promise.all([
+    await saveKardex(req, kardex),
+    await updateProduct(req, productoSQL, id_producto)
+  ])
+    .then(() => {
+      res.redirect(`/kardex/${articulo}`);
+    })
+    .catch(e => {
+      console.error("Hola Guapo");
+    });
 };
 
 const makeSale = async (req, res) => {
@@ -227,14 +251,20 @@ const makeSale = async (req, res) => {
 
   if (productoSQL.cantidad_producto === 0) {
     await saveKardex(req, kardex);
-    delete productoSQL.id_producto;
 
     return res.redirect("/kardex");
   }
 
-  await saveKardex(req, kardex);
-  await updateProduct(req, productoSQL, id_producto);
-  res.redirect("/kardex");
+  Promise.all([
+    await saveKardex(req, kardex),
+    await updateProduct(req, productoSQL, id_producto)
+  ])
+    .then(() => {
+      res.redirect(`/kardex/${articulo}`);
+    })
+    .catch(e => {
+      console.error("Hola guapo");
+    });
 };
 
 async function searchDetail(req, detail) {
@@ -305,6 +335,7 @@ async function saveKardex(req, kardex) {
         [kardex],
         (err, rs) => {
           if (err) console.log(err);
+          console.log("Kardex", rs);
           resolve();
         }
       );
@@ -350,5 +381,6 @@ module.exports = {
   makePurchase,
   makeSale,
   apiSearchProduct,
-  apiShowKardex
+  apiShowKardex,
+  apiGetProducts
 };
