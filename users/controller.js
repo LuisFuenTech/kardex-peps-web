@@ -90,7 +90,7 @@ const addProduct = async (req, res) => {
   const { nombre, cantidad, costo_unitario } = req.body;
 
   if (nombre && cantidad && costo_unitario) {
-    if (isNaN(nombre) || isNaN(cantidad) || isNaN(costo_unitario)) {
+    if (isNaN(cantidad) || isNaN(costo_unitario)) {
       req.flash("error_msg", "Ingrese números válidos");
       return res.redirect("/products");
     } else {
