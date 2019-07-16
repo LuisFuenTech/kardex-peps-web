@@ -14,10 +14,10 @@ const mysql = require("mysql");
 const myConnection = require("express-myconnection");
 
 //Database
-const port_sql = process.env.MYSQL_PORT || 3307;
-const url_sql = process.env.MYSQL_URL || "localhost";
+const port_sql = process.env.MYSQL_PORT || 3306;
+const host_sql = process.env.MYSQL_HOST || "localhost";
 const user_sql = process.env.MYSQL_USER || "root";
-const password_sql = process.env.MYSQL_PSWD || "";
+const password_sql = process.env.MYSQL_PSWD || "Mysql@fuentech2018";
 const db_sql = process.env.MYSQL_DB || "inventario_db";
 
 //Routes
@@ -54,7 +54,7 @@ app.use(
   myConnection(
     mysql,
     {
-      host: url_sql,
+      host: host_sql,
       port: port_sql,
       user: user_sql,
       password: password_sql,

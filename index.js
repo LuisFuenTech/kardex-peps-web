@@ -21,7 +21,6 @@ io.on("connection", socket => {
   });
 
   socket.on("client:products", data => {
-    console.log("Client products");
     io.sockets.emit("server:products", data);
   });
 

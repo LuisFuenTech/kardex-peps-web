@@ -89,22 +89,32 @@ const addProduct = async (req, res) => {
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
   const { nombre, cantidad, costo_unitario } = req.body;
 
-  product = new Producto();
-  detalle = new Detalle(id_detalle, nombre_detalle);
+  if (nombre && cantidad && costo_unitario) {
+    if (isNaN(nombre) || isNaN(cantidad) || isNaN(costo_unitario)) {
+      req.flash("error_msg", "Ingrese números válidos");
+      return res.redirect("/products");
+    } else {
+      product = new Producto();
+      detalle = new Detalle(id_detalle, nombre_detalle);
 
-  const costo_total = Number(cantidad) * Number(costo_unitario);
+      const costo_total = Number(cantidad) * Number(costo_unitario);
 
-  product.setNombre = nombre.toLowerCase();
-  product.setCantidad = Number(cantidad);
-  product.setCostoUnitario = Number(costo_unitario);
-  product.setCostoTotal = Number(costo_total);
-  const sql = await saveProduct(req, product);
-  product.setId = sql;
+      product.setNombre = nombre.toLowerCase();
+      product.setCantidad = Number(cantidad);
+      product.setCostoUnitario = Number(costo_unitario);
+      product.setCostoTotal = Number(costo_total);
+      const sql = await saveProduct(req, product);
+      product.setId = sql;
 
-  kardex = new Kardex(detalle, product);
-  await saveKardex(req, kardex);
+      kardex = new Kardex(detalle, product);
+      await saveKardex(req, kardex);
 
-  res.redirect("/products");
+      res.redirect("/products");
+    }
+  } else {
+    req.flash("error_msg", "Llene todos los campos");
+    return res.redirect("/products");
+  }
 };
 
 const getProducts = async (req, res) => {
@@ -118,11 +128,9 @@ const getProducts = async (req, res) => {
           return res.render("user/show_products", { errors });
         }
 
-        res.render("user/show_products", {
-          rs
-        });
+        res.render("user/show_products");
         //res.status(200).json(rs);
-        //resolve();
+        resolve();
       });
     });
   });
@@ -151,15 +159,20 @@ const getAbout = (req, res) => {
 };
 
 const makeAction = (req, res) => {
-  const { accion, articulo } = req.body;
+  const { accion, articulo, cantidad, costo_unitario, costo_total } = req.body;
   console.log("Making action ==> ", accion);
 
-  if (articulo === "Artículo") {
-    req.flash("error_msg", "Seleccione un artículo");
-    return res.redirect("/kardex");
+  if (cantidad && costo_unitario && costo_total) {
+    if (articulo === "Artículo") {
+      req.flash("error_msg", "Seleccione un artículo");
+      return res.redirect("/kardex");
+    } else {
+      if (accion)
+        accion === "compra" ? makePurchase(req, res) : makeSale(req, res);
+    }
   } else {
-    if (accion)
-      accion === "compra" ? makePurchase(req, res) : makeSale(req, res);
+    req.flash("error_msg", "Llene todos los campos");
+    return res.redirect("/kardex");
   }
 };
 
@@ -168,50 +181,55 @@ const makePurchase = async (req, res) => {
   const { cantidad, costo_unitario, costo_total, articulo } = req.body;
   const { id_detalle, nombre_detalle } = await searchDetail(req, "compra");
 
-  try {
-    var {
-      id_producto,
+  if (isNaN(cantidad) || isNaN(costo_unitario) || isNaN(costo_total)) {
+    req.flash("error_msg", "Ingrese números válidos");
+    return res.redirect("/kardex");
+  } else {
+    try {
+      var {
+        id_producto,
+        nombre_producto,
+        cantidad_producto,
+        costo_unitario_producto,
+        costo_total_producto
+      } = await searchProduct(req, articulo);
+    } catch (error) {
+      console.log("Search product failed:", error);
+    }
+
+    detalle = new Detalle(id_detalle, nombre_detalle);
+    productoSQL = new Producto(
       nombre_producto,
       cantidad_producto,
       costo_unitario_producto,
-      costo_total_producto
-    } = await searchProduct(req, articulo);
-  } catch (error) {
-    console.log("Search product failed:", error);
+      costo_total_producto,
+      id_producto
+    );
+
+    productoSQL.compraCantidad(Number(cantidad));
+    productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
+    productoSQL.compraUnitaria();
+
+    kardex = new Kardex(detalle, productoSQL);
+    kardex.setEntradaCantidad = cantidad;
+    kardex.setEntradaUnitario = costo_unitario;
+    kardex.setEntradaTotal = costo_total;
+
+    console.table(detalle);
+    console.table(productoSQL);
+    console.table(kardex);
+
+    Promise.all([
+      await saveKardex(req, kardex),
+      await updateProduct(req, productoSQL, id_producto)
+    ])
+      .then(() => {
+        res.redirect(`/kardex/${articulo}`);
+      })
+      .catch(e => {
+        console.error("Hola Guapo");
+      });
   }
-
-  detalle = new Detalle(id_detalle, nombre_detalle);
-  productoSQL = new Producto(
-    nombre_producto,
-    cantidad_producto,
-    costo_unitario_producto,
-    costo_total_producto,
-    id_producto
-  );
-
-  productoSQL.compraCantidad(Number(cantidad));
-  productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
-  productoSQL.compraUnitaria();
-
-  kardex = new Kardex(detalle, productoSQL);
-  kardex.setEntradaCantidad = cantidad;
-  kardex.setEntradaUnitario = costo_unitario;
-  kardex.setEntradaTotal = costo_total;
-
-  console.table(detalle);
-  console.table(productoSQL);
-  console.table(kardex);
-
-  Promise.all([
-    await saveKardex(req, kardex),
-    await updateProduct(req, productoSQL, id_producto)
-  ])
-    .then(() => {
-      res.redirect(`/kardex/${articulo}`);
-    })
-    .catch(e => {
-      console.error("Hola Guapo");
-    });
 };
 
 const makeSale = async (req, res) => {

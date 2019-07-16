@@ -1,29 +1,32 @@
 var socket = io();
 
-console.log("El primero");
+try {
+  document.getElementById("articulo").addEventListener("change", handleSelect);
+} catch (error) {}
 
-(async function showProducts() {
-  console.log("Productoooos");
-  let { data } = await axios.get("/get-products");
-  console.log(data);
+try {
+  document
+    .getElementById("cancelar-accion")
+    .addEventListener("click", handleCancelarAccion);
+} catch (error) {}
 
-  let table = "";
+try {
+  document
+    .getElementById("cancelar-articulo")
+    .addEventListener("click", handleCancelarArticulo);
+} catch (error) {}
 
-  data.forEach(item => {
-    table += `
-    <tr>
-      <td>${Boolean(item.nombre_producto) ? item.nombre_producto : ""}</td>
-      <td>${Boolean(item.cantidad_producto) ? item.cantidad_producto : ""}</td>
-    </tr>
-    `;
-  });
+function handleCancelarAccion(event) {
+  document.getElementById("costo_unitario").value = "";
+  document.getElementById("costo_total").value = "";
+  document.getElementById("cantidad").value = "";
+}
 
-  document.getElementById("product-table").innerHTML = table;
-  socket.emit("client:products", table);
-})();
-
-document.getElementById("articulo").addEventListener("change", handleSelect);
-
+function handleCancelarArticulo(event) {
+  document.getElementById("costo_unitario").value = "";
+  document.getElementById("cantidad").value = "";
+  document.getElementById("nombre").value = "";
+}
 // socket.on("server:costo", data => {
 //   console.log("Costo:", data);
 // });
@@ -33,10 +36,8 @@ document.getElementById("articulo").addEventListener("change", handleSelect);
 // });
 
 (function() {
-  socket.on("server:products", table => {
-    console.log("Server products");
-    alert(table);
-    document.getElementById("product-table").innerHTML = table;
+  socket.on("server:products", products => {
+    document.getElementById("product-table").innerHTML = products;
   });
 
   socket.on("server:kardex", ({ table, nombreArticulo }) => {
@@ -48,9 +49,11 @@ document.getElementById("articulo").addEventListener("change", handleSelect);
   });
 
   const { href } = document.location;
-  var [arr] = href.match(/kardex\/.*/g);
-  const nombreArticulo = arr.split("/")[1] || "Artículo";
-  showKardex(nombreArticulo);
+  try {
+    var [arr] = href.match(/kardex\/.*/g);
+    const nombreArticulo = arr.split("/")[1] || "Artículo";
+    showKardex(nombreArticulo);
+  } catch (error) {}
 })();
 
 function valorTotal() {
@@ -117,6 +120,26 @@ async function showKardex(nombreArticulo) {
   document.getElementById("kardex-table").innerHTML = table;
   socket.emit("client:kardex", { table, nombreArticulo });
 }
+
+(async function showProducts() {
+  let { data } = await axios.get("/get-products");
+
+  let table = "";
+
+  data.forEach(item => {
+    table += `
+    <tr>
+      <td>${Boolean(item.nombre_producto) ? item.nombre_producto : ""}</td>
+      <td>${Boolean(item.cantidad_producto) ? item.cantidad_producto : ""}</td>
+    </tr>
+    `;
+  });
+
+  try {
+    document.getElementById("product-table").innerHTML = table;
+    socket.emit("client:products", table);
+  } catch (error) {}
+})();
 
 function handleSelect(event) {
   const {

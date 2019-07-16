@@ -1,5 +1,5 @@
-<div class="col-md-3 mx-auto mt-4">
-    <div class="card mt-4 mb-4 ">
+<div class="col-sm-3 mt-4">
+    <div class="card mt-0 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Artículo</strong>
         </h5>
@@ -9,19 +9,22 @@
             <form action="/add-product" method="POST" class="text-center" style="color: #00838f;">
 
                 <div class="md-form mt-0">
-                    <input type="text" name="nombre" class="form-control mb-4" autofocus placeholder="Nombre">
+                    <input type="text" id="nombre" name="nombre" class="form-control mb-4" autofocus
+                        placeholder="Nombre">
                 </div>
 
                 <div class="form-row">
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="cantidad" class="form-control mb-4" placeholder="Cantidad">
+                            <input type="text" id="cantidad" name="cantidad" class="form-control mb-4"
+                                placeholder="Cantidad">
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="md-form">
-                            <input type="text" name="costo_unitario" class="form-control mb-4" placeholder="Costo unitario">
+                            <input type="text" id="costo_unitario" name="costo_unitario" class="form-control mb-4"
+                                placeholder="Costo unitario">
                         </div>
                     </div>
                 </div>
@@ -30,7 +33,7 @@
                 <div class="md-form-row">
                     <div class="col">
                         <button class="btn btn-sm btn-customer my-0" type="submit">Aceptar</button>
-                        <a class="btn btn-sm btn-danger my-1" href="#">Cancelar</a>
+                        <a id="cancelar-articulo" class="btn btn-sm btn-danger my-1" href="#">Cancelar</a>
                     </div>
                 </div>
             </form>
