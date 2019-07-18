@@ -7,6 +7,7 @@ const app = express();
 const path = require("path");
 const expHbs = require("express-handlebars");
 const session = require("express-session");
+const redirectToHTTPS = require("express-http-to-https").redirectToHTTPS;
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
 const navbarData = require("./data/nav-bar");
@@ -91,6 +92,7 @@ app.use((req, res, next) => {
 
   next();
 });
+app.use(redirectToHTTPS([/localhost:(\d{4})/], [], 301));
 
 app.get("/", (req, res) => {
   res.render("index");
