@@ -48,6 +48,8 @@ function handleCancelarArticulo(event) {
       : null;
   });
 
+  document.getElementById("year").innerHTML = new Date().getFullYear();
+
   const { href } = document.location;
   try {
     var [arr] = href.match(/kardex\/.*/g);
