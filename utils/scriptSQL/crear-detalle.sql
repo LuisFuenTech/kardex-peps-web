@@ -1,9 +1,31 @@
-SELECT * FROM detalle;
+SELECT *
+FROM detalle;
 
-INSERT INTO detalle (nombre_detalle) VALUES ("venta")
+CREATE TABLE `detalle`
+(
+  `id_detalle` int
+(11) NOT NULL,
+  `nombre_detalle` varchar
+(45) CHARACTER
+SET utf8
+COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE `detalle` (
-  `id_detalle` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre_detalle` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_detalle`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `detalle_peps`
+(
+  `id_detalle` int
+(11) NOT NULL,
+  `nombre_detalle` varchar
+(45) CHARACTER
+SET utf8
+COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO detalle
+  (nombre_detalle)
+VALUES
+  ("compra")
+INSERT INTO detalle
+  (nombre_detalle)
+VALUES
+  ("venta")
