@@ -105,18 +105,22 @@ async function showKardex(nombreArticulo) {
       <th>${item.fecha}</th>
       <td>${item.nombre_detalle}</td>
       <td>${Boolean(item.entrada_cantidad) ? item.entrada_cantidad : ""}</td>
-      <td>$ ${Boolean(item.entrada_unitario) ? item.entrada_unitario : ""}</td>
-      <td>$ ${Boolean(item.entrada_total) ? item.entrada_total : ""}</td>
+      <td>${
+        Boolean(item.entrada_unitario) ? "$ " + item.entrada_unitario : ""
+      }</td>
+      <td>${Boolean(item.entrada_total) ? "$ " + item.entrada_total : ""}</td>
 
       <td>${Boolean(item.salida_cantidad) ? item.salida_cantidad : ""}</td>
-      <td>$ ${Boolean(item.salida_unitario) ? item.salida_unitario : ""}</td>
-      <td>$ ${Boolean(item.salida_total) ? item.salida_total : ""}</td>
+      <td>${
+        Boolean(item.salida_unitario) ? "$  " + item.salida_unitario : ""
+      }</td>
+      <td>${Boolean(item.salida_total) ? "$" + item.salida_total : ""}</td>
 
       <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
-      <td>$ ${
-        Boolean(item.producto_unitario) ? item.producto_unitario : ""
+      <td>${
+        Boolean(item.producto_unitario) ? "$ " + item.producto_unitario : ""
       }</td>
-      <td>$ ${Boolean(item.producto_total) ? item.producto_total : ""}</td>
+      <td>${Boolean(item.producto_total) ? "$ " + item.producto_total : ""}</td>
     </tr>
     `;
   });
