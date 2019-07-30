@@ -6,7 +6,7 @@ module.exports = class Producto {
     costo_total = 0,
     id = null
   ) {
-    this.nombre_producto = nombre;
+    this.nombre_producto = nombre.toLocaleLowerCase();
     this.cantidad_producto = Number(cantidad);
     this.costo_unitario_producto = Number(costo_unitario);
     this.costo_total_producto = Number(costo_total);

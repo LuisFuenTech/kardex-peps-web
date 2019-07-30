@@ -23,6 +23,7 @@ const db_sql = process.env.MYSQL_DB || "inventario_db";
 
 //Routes
 const { userRoutes } = require("./users/index");
+const { pepsRoutes } = require("./peps/index");
 
 //Settings
 app.set("views", path.join(__dirname, "views"));
@@ -99,6 +100,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(userRoutes);
+app.use("/peps", pepsRoutes);
 
 app.get("*", function(req, res) {
   res.render("user/not_found");
