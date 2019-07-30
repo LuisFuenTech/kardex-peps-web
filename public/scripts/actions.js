@@ -114,7 +114,7 @@ async function showKardex(nombreArticulo) {
       <td>${
         Boolean(item.salida_unitario) ? "$  " + item.salida_unitario : ""
       }</td>
-      <td>${Boolean(item.salida_total) ? "$" + item.salida_total : ""}</td>
+      <td>${Boolean(item.salida_total) ? "$ " + item.salida_total : ""}</td>
 
       <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
       <td>${
