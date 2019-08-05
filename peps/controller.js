@@ -22,6 +22,7 @@ const getPeps = (req, res) => {
           return res.render("user/peps", { errors });
         }
 
+        console.log("TCL: getPeps -> rs", rs);
         res.render("user/peps", {
           rs
         });
@@ -44,7 +45,7 @@ const makeAction = (req, res) => {
     }
   } else {
     req.flash("error_msg", "Llene todos los campos");
-    return res.redirect("/kardex");
+    return res.redirect("/peps/peps");
   }
 };
 
@@ -55,7 +56,7 @@ const makePurchase = async (req, res) => {
 
   if (isNaN(cantidad) || isNaN(costo_unitario) || isNaN(costo_total)) {
     req.flash("error_msg", "Ingrese números válidos");
-    return res.redirect("/kardex");
+    return res.redirect("/peps/peps");
   } else {
     try {
       var {
@@ -108,7 +109,7 @@ const makePurchase = async (req, res) => {
       await saveProduct(req, productoPeps)
     ])
       .then(() => {
-        res.redirect(`/kardex/${articulo}`);
+        res.redirect(`/peps/peps/${articulo}`);
       })
       .catch(e => {
         console.error("Hola Guapo");

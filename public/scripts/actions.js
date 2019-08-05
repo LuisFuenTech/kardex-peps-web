@@ -59,9 +59,15 @@ function handleCancelarArticulo(event) {
 
   const { href } = document.location;
   try {
-    var [arr] = href.match(/kardex\/.*/g);
+    let [arr] = href.match(/kardex\/.*/g);
     const nombreArticulo = arr.split("/")[1] || "Artículo";
     showKardex(nombreArticulo);
+  } catch (error) {}
+
+  try {
+    let [arr] = href.match(/peps\/peps\/.*/g);
+    const nombreArticulo = arr.split("/")[2] || "Artículo";
+    showPeps(nombreArticulo);
   } catch (error) {}
 })();
 
@@ -133,21 +139,21 @@ async function showKardex(nombreArticulo) {
       <td>${item.nombre_detalle}</td>
       <td>${Boolean(item.entrada_cantidad) ? item.entrada_cantidad : ""}</td>
       <td>${
-        Boolean(item.entrada_unitario) ? "$ " + item.entrada_unitario : ""
+        Boolean(item.entrada_unitario) ? "$" + item.entrada_unitario : ""
       }</td>
-      <td>${Boolean(item.entrada_total) ? "$ " + item.entrada_total : ""}</td>
+      <td>${Boolean(item.entrada_total) ? "$" + item.entrada_total : ""}</td>
 
       <td>${Boolean(item.salida_cantidad) ? item.salida_cantidad : ""}</td>
       <td>${
-        Boolean(item.salida_unitario) ? "$  " + item.salida_unitario : ""
+        Boolean(item.salida_unitario) ? "$" + item.salida_unitario : ""
       }</td>
-      <td>${Boolean(item.salida_total) ? "$ " + item.salida_total : ""}</td>
+      <td>${Boolean(item.salida_total) ? "$" + item.salida_total : ""}</td>
 
       <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
       <td>${
-        Boolean(item.producto_unitario) ? "$ " + item.producto_unitario : ""
+        Boolean(item.producto_unitario) ? "$" + item.producto_unitario : ""
       }</td>
-      <td>${Boolean(item.producto_total) ? "$ " + item.producto_total : ""}</td>
+      <td>${Boolean(item.producto_total) ? "$" + item.producto_total : ""}</td>
     </tr>
     `;
   });
@@ -159,6 +165,7 @@ async function showKardex(nombreArticulo) {
 }
 
 async function showPeps(nombreArticulo) {
+  console.log("Showing peps");
   let { data } = await axios.get(`/peps/show/${nombreArticulo}`);
 
   let table = "";
@@ -170,22 +177,22 @@ async function showPeps(nombreArticulo) {
       <td>${item.nombre_detalle}</td>
       <td>${Boolean(item.entrada_cantidad) ? item.entrada_cantidad : ""}</td>
       <td>${
-        Boolean(item.entrada_unitario) ? "$ " + item.entrada_unitario : ""
+        Boolean(item.entrada_unitario) ? "$" + item.entrada_unitario : ""
       }</td>
-      <td>${Boolean(item.entrada_total) ? "$ " + item.entrada_total : ""}</td>
+      <td>${Boolean(item.entrada_total) ? "$" + item.entrada_total : ""}</td>
 
       <td>${Boolean(item.salida_cantidad) ? item.salida_cantidad : ""}</td>
       <td>${
-        Boolean(item.salida_unitario) ? "$  " + item.salida_unitario : ""
+        Boolean(item.salida_unitario) ? "$" + item.salida_unitario : ""
       }</td>
-      <td>${Boolean(item.salida_total) ? "$ " + item.salida_total : ""}</td>
+      <td>${Boolean(item.salida_total) ? "$" + item.salida_total : ""}</td>
 
       <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
       <td>${
-        Boolean(item.producto_unitario) ? "$ " + item.producto_unitario : ""
+        Boolean(item.producto_unitario) ? "$" + item.producto_unitario : ""
       }</td>
-      <td>${Boolean(item.producto_total) ? "$ " + item.producto_total : ""}</td>
-      <td>${Boolean(item.saldo) ? item.saldo : ""}</td>
+      <td>${Boolean(item.producto_total) ? "$" + item.producto_total : ""}</td>
+      <td>${Boolean(item.saldo) ? "$" + item.saldo : ""}</td>
     </tr>
     `;
   });

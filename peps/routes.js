@@ -1,7 +1,7 @@
 const app = require("express").Router();
 const { pepsController } = require("./index");
 
-app.get("/peps", pepsController.getPeps);
+app.get("/peps/:articulo?", pepsController.getPeps);
 
 // API
 app.get("/get-product/:detail", pepsController.apiSearchProduct);
