@@ -30,4 +30,8 @@ module.exports = class Kardex {
   set setSalidaTotal(total) {
     this.salida_total = Number(total);
   }
+
+  set setSaldo(saldo) {
+    this.saldo = Number(saldo);
+  }
 };

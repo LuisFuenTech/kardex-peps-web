@@ -6,6 +6,12 @@ try {
 
 try {
   document
+    .getElementById("articulo_peps")
+    .addEventListener("change", handleSelectPeps);
+} catch (error) {}
+
+try {
+  document
     .getElementById("cancelar-accion")
     .addEventListener("click", handleCancelarAccion);
 } catch (error) {}
@@ -41,11 +47,12 @@ function handleCancelarArticulo(event) {
   });
 
   socket.on("server:kardex", ({ table, nombreArticulo }) => {
-    const articulo = document.getElementById("articulo").value;
-
-    articulo == nombreArticulo
-      ? (document.getElementById("kardex-table").innerHTML = table)
-      : null;
+    try {
+      const articulo = document.getElementById("articulo").value;
+      articulo == nombreArticulo
+        ? (document.getElementById("kardex-table").innerHTML = table)
+        : null;
+    } catch (error) {}
   });
 
   document.getElementById("year").innerHTML = new Date().getFullYear();
@@ -95,6 +102,8 @@ async function handleAction() {
 }
 
 async function showKardex(nombreArticulo) {
+  console.log(window.location.href);
+  console.log("TCL: nombreArticulo en kardex", nombreArticulo);
   let { data } = await axios.get(`/show/${nombreArticulo}`);
 
   let table = "";
@@ -125,8 +134,48 @@ async function showKardex(nombreArticulo) {
     `;
   });
 
-  document.getElementById("kardex-table").innerHTML = table;
-  socket.emit("client:kardex", { table, nombreArticulo });
+  try {
+    document.getElementById("kardex-table").innerHTML = table;
+    socket.emit("client:kardex", { table, nombreArticulo });
+  } catch (error) {}
+}
+
+async function showPeps(nombreArticulo) {
+  let { data } = await axios.get(`/peps/show/${nombreArticulo}`);
+
+  let table = "";
+
+  data.forEach(item => {
+    table += `
+    <tr>
+      <th>${item.fecha}</th>
+      <td>${item.nombre_detalle}</td>
+      <td>${Boolean(item.entrada_cantidad) ? item.entrada_cantidad : ""}</td>
+      <td>${
+        Boolean(item.entrada_unitario) ? "$ " + item.entrada_unitario : ""
+      }</td>
+      <td>${Boolean(item.entrada_total) ? "$ " + item.entrada_total : ""}</td>
+
+      <td>${Boolean(item.salida_cantidad) ? item.salida_cantidad : ""}</td>
+      <td>${
+        Boolean(item.salida_unitario) ? "$  " + item.salida_unitario : ""
+      }</td>
+      <td>${Boolean(item.salida_total) ? "$ " + item.salida_total : ""}</td>
+
+      <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
+      <td>${
+        Boolean(item.producto_unitario) ? "$ " + item.producto_unitario : ""
+      }</td>
+      <td>${Boolean(item.producto_total) ? "$ " + item.producto_total : ""}</td>
+      <td>${Boolean(item.saldo) ? item.saldo : ""}</td>
+    </tr>
+    `;
+  });
+
+  try {
+    document.getElementById("peps-table").innerHTML = table;
+    socket.emit("client:kardex", { table, nombreArticulo });
+  } catch (error) {}
 }
 
 (async function showProducts() {
@@ -150,8 +199,18 @@ async function showKardex(nombreArticulo) {
 })();
 
 function handleSelect(event) {
+  console.log(event);
   const {
     target: { value: nombreArticulo }
   } = event;
+
   showKardex(nombreArticulo);
+}
+
+function handleSelectPeps(event) {
+  console.log(event);
+  const {
+    target: { value: nombreArticulo }
+  } = event;
+  showPeps(nombreArticulo);
 }

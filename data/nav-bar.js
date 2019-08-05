@@ -5,7 +5,7 @@ module.exports = [
   },
   {
     title: "PEPS",
-    url: "/peps"
+    url: "/peps/peps"
   },
   {
     title: "Productos",

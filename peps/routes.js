@@ -1,9 +1,10 @@
 const app = require("express").Router();
 const { pepsController } = require("./index");
 
-app.get("/home", (req, res) => {
-  res.status(200).send("Hola guapo de peps");
-});
+app.get("/peps", pepsController.getPeps);
+
+// API
+app.get("/show/:articulo", pepsController.apiShowPeps);
 
 //Post
 app.post("/add-product", pepsController.addProduct);

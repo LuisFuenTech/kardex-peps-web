@@ -3,7 +3,6 @@ const { userController } = require("./index");
 
 //Client - Render views
 app.get("/kardex/:articulo?", userController.getKardex);
-app.get("/peps", userController.getPeps);
 app.get("/products", userController.getProducts);
 app.get("/about", userController.getAbout);
 

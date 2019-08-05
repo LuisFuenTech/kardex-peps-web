@@ -27,6 +27,7 @@ const getKardex = (req, res) => {
 };
 
 const apiShowKardex = (req, res) => {
+  console.log("API Kardex");
   const { articulo } = req.params;
   const errors = [];
 
@@ -54,6 +55,7 @@ const apiShowKardex = (req, res) => {
       [articulo.toLowerCase()],
       (err, rs) => {
         if (err) {
+          console.log("TCL: apiShowKardex -> err", err);
           errors.push({ error: "Error al actualizar la tabla" });
           return res.render("user/kardex", { errors });
         }
@@ -61,26 +63,6 @@ const apiShowKardex = (req, res) => {
         res.status(200).json(rs);
       }
     );
-  });
-};
-
-const getPeps = async (req, res) => {
-  const errors = [];
-
-  await new Promise((resolve, reject) => {
-    req.getConnection((err, conn) => {
-      conn.query("SELECT * FROM producto", (err, rs) => {
-        if (err) {
-          errors.push({ error: "Error al actualizar la tabla" });
-          return res.render("user/peps", { errors });
-        }
-
-        res.render("user/peps", {
-          rs
-        });
-        resolve();
-      });
-    });
   });
 };
 
@@ -145,7 +127,7 @@ const apiGetProducts = async (req, res) => {
           errors.push({ error: "Error al actualizar la tabla" });
           return res.render("user/show_products", { errors });
         }
-        console.log(rs)
+        console.log(rs);
         res.status(200).json(rs);
         resolve();
       });
@@ -392,7 +374,6 @@ module.exports = {
   addProduct,
   makeAction,
   getKardex,
-  getPeps,
   getProducts,
   getAbout,
   makePurchase,

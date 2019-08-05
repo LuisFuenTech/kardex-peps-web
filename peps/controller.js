@@ -6,6 +6,30 @@ let kardex = {};
 let productoSQL = {};
 let productoPeps = {};
 
+const getPeps = (req, res) => {
+  const { articulo } = req.params;
+  const errors = [];
+
+  req.getConnection((err, conn) => {
+    conn.query(
+      "SELECT DISTINCT nombre_producto FROM producto_peps",
+      (err, rs) => {
+        for (let [index, product] of rs.entries())
+          if (product.nombre_producto == articulo) rs[index].selected = true;
+
+        if (err) {
+          errors.push({ error: "Error al actualizar la tabla" });
+          return res.render("user/peps", { errors });
+        }
+
+        res.render("user/peps", {
+          rs
+        });
+      }
+    );
+  });
+};
+
 const makeAction = (req, res) => {
   const { accion, articulo, cantidad, costo_unitario, costo_total } = req.body;
   console.log("Making action ==> ", accion);
@@ -41,6 +65,10 @@ const makePurchase = async (req, res) => {
         costo_unitario_producto,
         costo_total_producto
       } = await searchProduct(req, articulo);
+
+      var { total_productos, total_costos } = await sumProducts(req, articulo);
+      console.log("TCL: makePurchase -> total_costos", total_costos);
+      console.log("TCL: makePurchase -> costo_total", costo_total);
     } catch (error) {
       console.log("Search product failed:", error);
     }
@@ -48,12 +76,12 @@ const makePurchase = async (req, res) => {
     detalle = new Detalle(id_detalle, nombre_detalle);
     productoSQL = new Producto(
       nombre_producto,
-      cantidad_producto,
-      costo_unitario_producto,
-      costo_total_producto,
+      cantidad,
+      costo_unitario,
+      costo_total,
       id_producto
     );
-    
+
     productoPeps = new Producto(
       articulo,
       cantidad,
@@ -61,14 +89,15 @@ const makePurchase = async (req, res) => {
       costo_total
     );
 
-    productoSQL.compraCantidad(Number(cantidad));
-    productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
-    productoSQL.compraUnitaria();
+    productoSQL.compraCantidad(Number(total_productos));
+    // productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
+    // productoSQL.compraUnitaria();
 
     kardex = new Kardex(detalle, productoSQL);
     kardex.setEntradaCantidad = cantidad;
     kardex.setEntradaUnitario = costo_unitario;
     kardex.setEntradaTotal = costo_total;
+    kardex.setSaldo = Number(total_costos) + Number(costo_total);
 
     console.table(detalle);
     console.table(productoSQL);
@@ -110,6 +139,8 @@ const addProduct = async (req, res) => {
       product.setId = sql;
 
       kardex = new Kardex(detalle, product);
+      kardex.setSaldo = Number(costo_total);
+
       await saveKardex(req, kardex);
 
       res.redirect("/products");
@@ -207,7 +238,52 @@ async function saveKardex(req, kardex) {
   });
 }
 
+const apiShowPeps = (req, res) => {
+  const { articulo } = req.params;
+  const errors = [];
+
+  console.log("API Show Peps");
+
+  req.getConnection((err, conn) => {
+    conn.query(
+      `SELECT 
+          DATE_FORMAT(kardex_peps.fecha, "%d-%m-%Y") as fecha,
+          detalle_peps.nombre_detalle,
+          kardex_peps.entrada_cantidad,
+          kardex_peps.entrada_unitario,
+          kardex_peps.entrada_total,
+          kardex_peps.salida_cantidad,
+          kardex_peps.salida_unitario,
+          kardex_peps.salida_total,
+          kardex_peps.producto_cantidad,
+          kardex_peps.producto_unitario,
+          kardex_peps.producto_total,
+          kardex_peps.saldo
+        FROM kardex_peps
+        INNER JOIN detalle_peps
+          ON detalle_peps.id_detalle = kardex_peps.id_detalle
+        INNER JOIN producto_peps
+          ON producto_peps.id_producto = kardex_peps.id_producto
+        WHERE producto_peps.nombre_producto = ?
+        ORDER by producto_peps.fecha, producto_peps.hora`,
+      [articulo.toLowerCase()],
+      (err, rs) => {
+        if (err) {
+          errors.push({ error: "Error al actualizar la tabla" });
+          console.log("Error al actualizar la tabla:", err);
+          return res.render("user/peps", { errors });
+        }
+
+        console.log("TCL: apiShowPeps -> rs", rs);
+        res.status(200).json(rs);
+      }
+    );
+  });
+};
+
 module.exports = {
+  getPeps,
   addProduct,
-  makeAction
+  makeAction,
+  apiShowPeps
 };
