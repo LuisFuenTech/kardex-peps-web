@@ -101,6 +101,24 @@ async function handleAction() {
   }
 }
 
+async function handleActionPeps() {
+  const accion = document.getElementById("venta_check").checked;
+  const articulo = document.getElementById("articulo_peps");
+  const costo_unitario = document.getElementById("costo_unitario");
+
+  if (accion) {
+    costo_unitario.setAttribute("readonly", "");
+
+    if (articulo.selectedIndex > 0) {
+      let { data } = await axios.get(`/peps/get-product/${articulo.value}`);
+      costo_unitario.value = data.costo_unitario_producto;
+    }
+  } else {
+    costo_unitario.value = "";
+    costo_unitario.removeAttribute("readonly");
+  }
+}
+
 async function showKardex(nombreArticulo) {
   console.log(window.location.href);
   console.log("TCL: nombreArticulo en kardex", nombreArticulo);
@@ -199,7 +217,6 @@ async function showPeps(nombreArticulo) {
 })();
 
 function handleSelect(event) {
-  console.log(event);
   const {
     target: { value: nombreArticulo }
   } = event;
@@ -208,7 +225,6 @@ function handleSelect(event) {
 }
 
 function handleSelectPeps(event) {
-  console.log(event);
   const {
     target: { value: nombreArticulo }
   } = event;

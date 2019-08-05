@@ -281,9 +281,17 @@ const apiShowPeps = (req, res) => {
   });
 };
 
+const apiSearchProduct = async (req, res) => {
+  const { detail } = req.params;
+  console.log("Api search product peps:", detail);
+  productoSQL = await searchProduct(req, detail);
+  res.status(200).json(productoSQL);
+};
+
 module.exports = {
   getPeps,
   addProduct,
   makeAction,
-  apiShowPeps
+  apiShowPeps,
+  apiSearchProduct
 };
