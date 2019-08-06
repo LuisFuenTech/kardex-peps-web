@@ -4,12 +4,16 @@ module.exports = [
     url: "/kardex"
   },
   {
+    title: "Productos",
+    url: "/products"
+  },
+  {
     title: "PEPS",
     url: "/peps/peps"
   },
   {
-    title: "Productos",
-    url: "/products"
+    title: "Productos PEPS",
+    url: "/peps/products"
   },
   {
     title: "Acerca de",

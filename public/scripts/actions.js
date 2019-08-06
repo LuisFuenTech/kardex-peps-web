@@ -126,8 +126,6 @@ async function handleActionPeps() {
 }
 
 async function showKardex(nombreArticulo) {
-  console.log(window.location.href);
-  console.log("TCL: nombreArticulo en kardex", nombreArticulo);
   let { data } = await axios.get(`/show/${nombreArticulo}`);
 
   let table = "";
@@ -165,7 +163,6 @@ async function showKardex(nombreArticulo) {
 }
 
 async function showPeps(nombreArticulo) {
-  console.log("Showing peps");
   let { data } = await axios.get(`/peps/show/${nombreArticulo}`);
 
   let table = "";
@@ -187,12 +184,12 @@ async function showPeps(nombreArticulo) {
       }</td>
       <td>${Boolean(item.salida_total) ? "$" + item.salida_total : ""}</td>
 
-      <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : ""}</td>
+      <td>${Boolean(item.producto_cantidad) ? item.producto_cantidad : "0"}</td>
       <td>${
-        Boolean(item.producto_unitario) ? "$" + item.producto_unitario : ""
+        Boolean(item.producto_unitario) ? "$" + item.producto_unitario : "0"
       }</td>
-      <td>${Boolean(item.producto_total) ? "$" + item.producto_total : ""}</td>
-      <td>${Boolean(item.saldo) ? "$" + item.saldo : ""}</td>
+      <td>${Boolean(item.producto_total) ? "$" + item.producto_total : "0"}</td>
+      <td>${Boolean(item.saldo) ? "$" + item.saldo : "0"}</td>
     </tr>
     `;
   });
@@ -223,6 +220,26 @@ async function showPeps(nombreArticulo) {
   } catch (error) {}
 })();
 
+async function showProductsPeps(nombreArticulo) {
+  let { data } = await axios.get(`/peps/get-products/${nombreArticulo}`);
+
+  let table = "";
+
+  data.forEach(item => {
+    table += `
+    <tr>
+      <td>${Boolean(item.nombre_producto) ? item.nombre_producto : ""}</td>
+      <td>${Boolean(item.cantidad_producto) ? item.cantidad_producto : ""}</td>
+    </tr>
+    `;
+  });
+
+  try {
+    document.getElementById("product-peps-table").innerHTML = table;
+    //socket.emit("client:products", table);
+  } catch (error) {}
+}
+
 function handleSelect(event) {
   const {
     target: { value: nombreArticulo }
@@ -235,5 +252,6 @@ function handleSelectPeps(event) {
   const {
     target: { value: nombreArticulo }
   } = event;
+  showProductsPeps(nombreArticulo);
   showPeps(nombreArticulo);
 }

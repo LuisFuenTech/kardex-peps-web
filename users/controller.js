@@ -195,10 +195,6 @@ const makePurchase = async (req, res) => {
     kardex.setEntradaUnitario = costo_unitario;
     kardex.setEntradaTotal = costo_total;
 
-    console.table(detalle);
-    console.table(productoSQL);
-    console.table(kardex);
-
     Promise.all([
       await saveKardex(req, kardex),
       await updateProduct(req, productoSQL, id_producto)

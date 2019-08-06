@@ -1,4 +1,4 @@
-<div class="col-sm-3 mt-4 mb-4">
+<div class="col-sm-3 mt-4">
     <div class="card mt-0 mb-4 ">
         <h5 class="card-header white-text text-center py-4">
             <strong>Artículo</strong>
@@ -6,9 +6,19 @@
 
         <div class="card-body">
 
-            <form action="/add-product" method="POST" class="text-center" style="color: #00838f;">
+            <form action="/peps/add-product" method="POST" class="text-center" style="color: #00838f;">
+                <div class="md-form mb-0">
+                    <select class="custom-select" id="articulo_peps" name="articulo">
+                        <option>Artículo </option>
 
-                <div class="md-form mt-0">
+                        {{#each productos}}
+                        <option {{#if this.selected}} selected='true' {{/if}}>{{this.nombre_producto}} </option>
+                        {{/each}}
+
+                    </select>
+                </div>
+
+                <div class="md-form mt-4">
                     <input type="text" id="nombre" name="nombre" class="form-control mb-4" autofocus
                         placeholder="Nombre">
                 </div>
