@@ -127,7 +127,6 @@ const apiGetProducts = async (req, res) => {
           errors.push({ error: "Error al actualizar la tabla" });
           return res.render("user/show_products", { errors });
         }
-        console.log(rs);
         res.status(200).json(rs);
         resolve();
       });

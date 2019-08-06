@@ -1,5 +1,4 @@
 const { Producto, Detalle, Kardex } = require("../models/index");
-const { simulator } = require("../data/index");
 let product = {};
 let detalle = {};
 let kardex = {};
@@ -49,6 +48,110 @@ const makeAction = (req, res) => {
   }
 };
 
+const makeSale = async (req, res) => {
+  console.log("Making sale ==>");
+  const { cantidad, costo_unitario, costo_total, articulo } = req.body;
+  console.log("TCL: req.body", req.body);
+  const { id_detalle, nombre_detalle } = await searchDetail(req, "venta");
+
+  try {
+    var products = await searcProducts(req, articulo);
+    var { total_productos, total_costos } = await sumProducts(req, articulo);
+  } catch (error) {}
+
+  detalle = new Detalle(id_detalle, nombre_detalle);
+
+  var { total_productos_costo } = await sumTotalProducts(req, articulo);
+  console.log("Typeof total_productos_costo", typeof total_productos_costo);
+  console.log("total_productos_costo", total_productos_costo);
+
+  var cantidadRestante = Number(cantidad);
+  var cantidadAVender = Number(cantidad);
+  var ventaTotal = 0;
+
+  console.log("Antes de for");
+  for (let [index, product] of products.entries()) {
+    console.log(`TCL: product ${index}`, product);
+
+    if (Number(product.cantidad_producto) - cantidadAVender < 0) {
+      cantidadRestante =
+        (Number(product.cantidad_producto) - cantidadAVender) * -1;
+      cantidadAVender = cantidadRestante;
+      ventaTotal =
+        Number(product.cantidad_producto) *
+        Number(product.costo_unitario_producto);
+      total_productos_costo -= ventaTotal;
+
+      kardex = new Kardex(detalle, product);
+      kardex.setSalidaCantidad = Number(product.cantidad_producto);
+      kardex.setSalidaUnitario = Number(product.costo_unitario_producto);
+      kardex.setSalidaTotal = ventaTotal;
+      kardex.setSaldo = total_productos_costo;
+      console.log("TCL: kardex", kardex);
+
+      Promise.all([
+        deleteProduct(req, product.id_producto),
+        saveKardex(req, kardex)
+      ])
+        .then(() => {
+          res.redirect(`/peps/peps/${articulo}`);
+        })
+        .catch(e => {
+          console.error("Hola Guapo");
+        });
+    } else {
+      cantidadRestante = Number(product.cantidad_producto) - Number(cantidad);
+      ventaTotal = cantidad * Number(product.costo_unitario_producto);
+      try {
+        total_productos_costo -= ventaTotal;
+      } catch (error) {
+        console.log("total_productos_costo:", error);
+      }
+
+      product.cantidad_producto = cantidadRestante;
+      product.costo_total_producto =
+        Number(product.costo_unitario_producto) * cantidadRestante;
+      kardex = new Kardex(detalle, product);
+      kardex.setSalidaCantidad = cantidad;
+      kardex.setSalidaUnitario = Number(product.costo_unitario_producto);
+      kardex.setSalidaTotal = ventaTotal;
+      kardex.setSaldo = total_costos - ventaTotal;
+
+      console.log("TCL: kardex", kardex);
+
+      if (cantidadRestante == 0) {
+        Promise.all([
+          deleteProduct(req, product.id_producto),
+          saveKardex(req, kardex)
+        ])
+          .then(() => {
+            //res.redirect(`/peps/peps/${articulo}`);
+            console.log("Break correcto");
+          })
+          .catch(e => {
+            console.error("Break de error");
+          });
+      } else {
+        Promise.all([
+          updateProduct(req, product, product.id_producto),
+          saveKardex(req, kardex)
+        ])
+          .then(() => {
+            //res.redirect(`/peps/peps/${articulo}`);
+            console.log("Break correcto");
+          })
+          .catch(e => {
+            console.error("Break de error");
+          });
+      }
+      break;
+    }
+  }
+
+  console.log("Después de for");
+  res.redirect(`/peps/peps/${articulo}`);
+};
+
 const makePurchase = async (req, res) => {
   console.log("Making purchase ==>");
   const { cantidad, costo_unitario, costo_total, articulo } = req.body;
@@ -59,17 +162,9 @@ const makePurchase = async (req, res) => {
     return res.redirect("/peps/peps");
   } else {
     try {
-      var {
-        id_producto,
-        nombre_producto,
-        cantidad_producto,
-        costo_unitario_producto,
-        costo_total_producto
-      } = await searchProduct(req, articulo);
+      var { id_producto, nombre_producto } = await searchProduct(req, articulo);
 
       var { total_productos, total_costos } = await sumProducts(req, articulo);
-      console.log("TCL: makePurchase -> total_costos", total_costos);
-      console.log("TCL: makePurchase -> costo_total", costo_total);
     } catch (error) {
       console.log("Search product failed:", error);
     }
@@ -91,8 +186,6 @@ const makePurchase = async (req, res) => {
     );
 
     productoSQL.compraCantidad(Number(total_productos));
-    // productoSQL.compraTotal(Number(Number(costo_total).toFixed(2)));
-    // productoSQL.compraUnitaria();
 
     kardex = new Kardex(detalle, productoSQL);
     kardex.setEntradaCantidad = cantidad;
@@ -177,7 +270,26 @@ async function searchProduct(req, detail) {
         [detail],
         (err, rs) => {
           if (err) console.log(err);
-          resolve(rs[rs.length - 1]);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
+
+async function searcProducts(req, detail) {
+  console.log("Searching product", detail);
+  return await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `SELECT * FROM producto_peps WHERE nombre_producto = ? ORDER by fecha, hora`,
+        [detail],
+        (err, rs) => {
+          if (err) {
+            console.log(err);
+            reject();
+          }
+          resolve(rs);
         }
       );
     });
@@ -190,6 +302,22 @@ async function sumProducts(req, detail) {
     req.getConnection(async (err, conn) => {
       conn.query(
         `SELECT SUM(cantidad_producto) AS total_productos, SUM(costo_total_producto) AS total_costos FROM producto_peps WHERE nombre_producto = ?`,
+        [detail],
+        (err, rs) => {
+          if (err) console.log(err);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
+
+async function sumTotalProducts(req, detail) {
+  console.log("Searching product", detail);
+  return await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `SELECT SUM(costo_unitario_producto) AS total_productos_costo FROM producto_peps WHERE nombre_producto = ?`,
         [detail],
         (err, rs) => {
           console.log("TCL: sumProducts -> rs", rs);
@@ -243,8 +371,6 @@ const apiShowPeps = (req, res) => {
   const { articulo } = req.params;
   const errors = [];
 
-  console.log("API Show Peps");
-
   req.getConnection((err, conn) => {
     conn.query(
       `SELECT 
@@ -274,8 +400,6 @@ const apiShowPeps = (req, res) => {
           console.log("Error al actualizar la tabla:", err);
           return res.render("user/peps", { errors });
         }
-
-        console.log("TCL: apiShowPeps -> rs", rs);
         res.status(200).json(rs);
       }
     );
@@ -288,6 +412,38 @@ const apiSearchProduct = async (req, res) => {
   productoSQL = await searchProduct(req, detail);
   res.status(200).json(productoSQL);
 };
+
+async function deleteProduct(req, id_producto) {
+  console.log("Deleting product");
+  await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `DELETE FROM producto_peps WHERE id_producto = ? `,
+        [id_producto],
+        (err, rs) => {
+          if (err) console.log(err);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
+
+async function updateProduct(req, product, id_producto) {
+  console.log("Updating product");
+  await new Promise((resolve, reject) => {
+    req.getConnection(async (err, conn) => {
+      conn.query(
+        `UPDATE producto_peps SET ? WHERE id_producto = ? `,
+        [product, id_producto],
+        (err, rs) => {
+          if (err) console.log(err);
+          resolve(rs[0]);
+        }
+      );
+    });
+  });
+}
 
 module.exports = {
   getPeps,
