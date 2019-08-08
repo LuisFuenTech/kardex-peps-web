@@ -184,7 +184,7 @@ const makeSale = async (req, res) => {
           });
       } else {
         kardex = new Kardex(detalle, product);
-        kardex.setSalidaCantidad = cantidad;
+        kardex.setSalidaCantidad = cantidadAVender;
         kardex.setSalidaUnitario = Number(product.costo_unitario_producto);
         kardex.setSalidaTotal = ventaTotal;
         kardex.setSaldo = total_costos - ventaTotal;
