@@ -24,7 +24,7 @@ COLLATE utf8_unicode_ci NOT NULL
 INSERT INTO detalle
   (nombre_detalle)
 VALUES
-  ("compra")
+  ("compra");
 INSERT INTO detalle
   (nombre_detalle)
 VALUES

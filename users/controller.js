@@ -60,7 +60,7 @@ const apiShowKardex = (req, res) => {
           return res.render("user/kardex", { errors });
         }
 
-        res.status(200).json(rs);
+        return res.status(200).json(rs);
       }
     );
   });
@@ -337,9 +337,9 @@ async function saveKardex(req, kardex) {
   });
 }
 
-async function deleteProduct(req, product, id_producto) {
+function deleteProduct(req, product, id_producto) {
   console.log("Deleting product");
-  await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     req.getConnection(async (err, conn) => {
       conn.query(
         `DELETE FROM producto WHERE id_producto = ? `,
